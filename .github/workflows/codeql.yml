@@ -30,8 +30,7 @@ jobs:
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
-        config-file: ./.github/codeql/codeql-config.yml # optional, specify if you have a custom CodeQL config file
-
+       
     - name: Build with Maven
       run: mvn -B package --file backend/pom.xml
 
