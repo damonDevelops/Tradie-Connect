@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class SystemAdmin extends User {
-    // You can add any additional fields specific to SystemAdmin here
 
     @Override
     public String getPassword() {

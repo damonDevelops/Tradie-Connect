@@ -9,10 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Data
@@ -37,7 +34,7 @@ public class ServiceProvider extends User {
 
     @OneToMany(mappedBy = "serviceProvider")
     @JsonIdentityReference(alwaysAsId = true)
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
 
     @JsonManagedReference
     @ManyToMany(mappedBy = "qualifiedServiceProviders")
