@@ -37,6 +37,9 @@ public class ServiceRequest {
     @OneToMany(mappedBy = "serviceRequest")
     private Set<ServiceRequestApplicant> applicants = new HashSet<>();
 
+    @OneToOne
+    private Review review;
+
     @JsonBackReference
     @ManyToMany
     @JoinTable(

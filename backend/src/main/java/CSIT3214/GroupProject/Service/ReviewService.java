@@ -3,6 +3,7 @@ package CSIT3214.GroupProject.Service;
 import CSIT3214.GroupProject.DataAccessLayer.*;
 import CSIT3214.GroupProject.Model.Review;
 import CSIT3214.GroupProject.Model.ServiceProvider;
+import CSIT3214.GroupProject.Model.ServiceRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,10 +35,12 @@ public class ReviewService {
     @Transactional
     public Review saveReview(CreateReviewDTO reviewDto) {
         Review review = new Review();
+        ServiceRequest sr = serviceRequestRepository.findById(reviewDto.getServiceRequestId()).orElse(null);
+        sr.setReview(review);
         ServiceProvider sp = serviceProviderRepository.findById(reviewDto.getServiceProviderId()).orElse(null);
         review.setCustomer(customerRepository.findById(reviewDto.getCustomerId()).orElse(null));
         review.setServiceProvider(sp);
-        review.setServiceRequest(serviceRequestRepository.findById(reviewDto.getServiceRequestId()).orElse(null));
+        review.setServiceRequest(sr);
         review.setRating(reviewDto.getRating());
         review.setComment(reviewDto.getComment());
 
