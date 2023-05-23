@@ -5,6 +5,7 @@ import CSIT3214.GroupProject.Model.*;
 import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,9 +73,12 @@ public class SystemAdminController {
     }
 
     private Customer generateCustomer(Suburb suburb) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode("password");
+
         Customer customer = new Customer();
         customer.setEmail(faker.internet().emailAddress());
-        customer.setPassword(faker.internet().password());
+        customer.setPassword(encodedPassword);
         customer.setFirstName(faker.name().firstName());
         customer.setLastName(faker.name().lastName());
         customer.setStreetAddress(faker.address().streetAddress());
@@ -93,9 +97,12 @@ public class SystemAdminController {
     }
 
     private ServiceProvider generateServiceProvider(Suburb suburb) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode("password");
+
         ServiceProvider serviceProvider = new ServiceProvider();
         serviceProvider.setEmail(faker.internet().emailAddress());
-        serviceProvider.setPassword(faker.internet().password());
+        serviceProvider.setPassword(encodedPassword);
         serviceProvider.setStreetAddress(faker.address().streetAddress());
         serviceProvider.setPhoneNumber("0400000000");
         serviceProvider.setCompanyName(faker.company().name());
