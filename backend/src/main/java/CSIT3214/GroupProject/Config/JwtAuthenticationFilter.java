@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Component class to filter and process JWT authentication.
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -33,6 +36,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SystemAdminRepository systemAdminRepository;
     private final UserDetailsService userDetailsService;
 
+    /**
+     * Method to filter and process JWT authentication.
+     *
+     * @param request     the HTTP servlet request
+     * @param response    the HTTP servlet response
+     * @param filterChain the filter chain
+     * @throws ServletException if a servlet-related exception occurs
+     * @throws IOException      if an I/O related exception occurs
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -90,13 +102,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // Method to find a user by email
+    /**
+     * Method to find a user by email.
+     *
+     * @param email the email of the user
+     * @return the found User object, or null if not found
+     */
     private User findUserByEmail(String email) {
         User user = customerRepository.findByEmail(email).orElse(null);
         if (user == null) {
             user = serviceProviderRepository.findByEmail(email).orElse(null);
         }
-        if (user == null) { // Add this block
+        if (user == null) {
             user = systemAdminRepository.findByEmail(email).orElse(null);
         }
         return user;

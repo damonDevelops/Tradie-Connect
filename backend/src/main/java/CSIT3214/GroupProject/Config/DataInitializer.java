@@ -9,6 +9,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+/**
+ * Component class to initialize data upon application startup.
+ */
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -16,6 +19,13 @@ public class DataInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final SystemAdminController systemAdminController;
 
+    /**
+     * Constructor for the DataInitializer class.
+     *
+     * @param systemAdminRepository the SystemAdminRepository
+     * @param passwordEncoder       the PasswordEncoder
+     * @param systemAdminController the SystemAdminController
+     */
     @Autowired
     public DataInitializer(SystemAdminRepository systemAdminRepository, PasswordEncoder passwordEncoder, SystemAdminController systemAdminController) {
         this.systemAdminRepository = systemAdminRepository;
@@ -23,12 +33,20 @@ public class DataInitializer implements CommandLineRunner {
         this.systemAdminController = systemAdminController;
     }
 
+    /**
+     * Method to run the data initialization process.
+     *
+     * @param args the command line arguments
+     */
     @Override
     public void run(String... args) {
         createSystemAdmin();
         generateTestData();
     }
 
+    /**
+     * Method to create the system admin user.
+     */
     private void createSystemAdmin() {
         String email = "admin@example.com";
         if (systemAdminRepository.findByEmail(email).isEmpty()) {
@@ -41,6 +59,9 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
+    /**
+     * Method to generate test data.
+     */
     private void generateTestData() {
         systemAdminController.generateTestData();
         System.out.println("Test Data successfully generated");

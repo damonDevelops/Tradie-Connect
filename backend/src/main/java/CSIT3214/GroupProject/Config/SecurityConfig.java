@@ -25,6 +25,14 @@ public class SecurityConfig implements WebMvcConfigurer {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    /**
+     * Configures the security filter chain.
+     *
+     * @param http the HttpSecurity object
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -48,6 +56,12 @@ public class SecurityConfig implements WebMvcConfigurer {
 
         return http.build();
     }
+
+    /**
+     * Configures CORS mappings.
+     *
+     * @param registry the CorsRegistry object
+     */
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

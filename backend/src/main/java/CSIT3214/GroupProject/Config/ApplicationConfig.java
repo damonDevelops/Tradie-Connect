@@ -29,20 +29,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-
     private final CustomerRepository customerRepository;
     private final ServiceProviderRepository serviceProviderRepository;
     private final SystemAdminRepository systemAdminRepository;
 
+    /**
+     * Bean for the UserDetailsService.
+     *
+     * @return an instance of UserDetailsService
+     */
     @Bean
     @Transactional
     public UserDetailsService userDetailsService() {
         return username -> {
-            User user = null;
+            User user;
             try {
                 Customer customer = customerRepository.findByEmail(username).orElse(null);
                 ServiceProvider serviceProvider = serviceProviderRepository.findByEmail(username).orElse(null);
-                SystemAdmin systemAdmin = systemAdminRepository.findByEmail(username).orElse(null); // Add this line
+                SystemAdmin systemAdmin = systemAdminRepository.findByEmail(username).orElse(null);
 
                 if (customer != null) {
                     user = customer;
@@ -64,6 +68,11 @@ public class ApplicationConfig {
         };
     }
 
+    /**
+     * Bean for the AuthenticationProvider.
+     *
+     * @return an instance of AuthenticationProvider
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -72,11 +81,22 @@ public class ApplicationConfig {
         return authProvider;
     }
 
+    /**
+     * Bean for the AuthenticationManager.
+     *
+     * @param config the AuthenticationConfiguration
+     * @return an instance of AuthenticationManager
+     * @throws Exception if an error occurs while building the AuthenticationManager
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
+    /**
+     * Bean for the PasswordEncoder.
+     *
+     * @return an instance of PasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
