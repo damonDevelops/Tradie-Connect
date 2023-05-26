@@ -112,17 +112,21 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         UserDetails userDetails;
+        User user;
         // Check if the user exists in the Customer repository, if not, check the ServiceProvider repository, and finally, check the SystemAdmin repository
         var customer = customerRepository.findByEmail(request.getEmail());
         if (customer.isPresent()) {
             userDetails = new CustomUserDetails(customer.get(), List.of(new SimpleGrantedAuthority(customer.get().getRole().toString())));
+            user = customer.get();
         } else {
             var serviceProvider = serviceProviderRepository.findByEmail(request.getEmail()).orElse(null);
             if (serviceProvider != null) {
                 userDetails = new CustomUserDetails(serviceProvider, List.of(new SimpleGrantedAuthority(serviceProvider.getRole().toString())));
+                user = serviceProvider;
             } else {
-                var systemAdmin = systemAdminRepository.findByEmail(request.getEmail()).orElseThrow(); // Add this line
-                userDetails = new CustomUserDetails(systemAdmin, List.of(new SimpleGrantedAuthority(systemAdmin.getRole().toString()))); // Add this line
+                var systemAdmin = systemAdminRepository.findByEmail(request.getEmail()).orElseThrow();
+                userDetails = new CustomUserDetails(systemAdmin, List.of(new SimpleGrantedAuthority(systemAdmin.getRole().toString())));
+                user = systemAdmin;
             }
         }
 // Generate a JWT token for the user
@@ -131,6 +135,7 @@ public class AuthenticationService {
 // Return an AuthenticationResponse containing the JWT token
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .user(user)
                 .build();
     }
 

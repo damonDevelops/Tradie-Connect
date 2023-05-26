@@ -3,8 +3,8 @@ package CSIT3214.GroupProject.API;
 import CSIT3214.GroupProject.DataAccessLayer.*;
 import CSIT3214.GroupProject.Model.*;
 import com.github.javafaker.Faker;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,9 +47,13 @@ public class SystemAdminController {
 
     private static final Faker faker = new Faker(new Locale("en-AU"));
 
-    @PreAuthorize("hasAnyAuthority('ROLE_SYSTEM_ADMIN', 'ROLE_CUSTOMER', 'ROLE_SERVICE_PROVIDER')")
+    //@PreAuthorize("hasAnyAuthority('ROLE_SYSTEM_ADMIN', 'ROLE_CUSTOMER', 'ROLE_SERVICE_PROVIDER')")
+    @Transactional
     @PostMapping("/generateTestData")
     public void generateTestData() {
+
+        System.out.println("Generating test data this will take around 1 minute");
+
         for (int i = 0; i < 100; i++) {
             Suburb suburb = generateSuburb();
             Customer customer = generateCustomer(suburb);
@@ -82,6 +86,7 @@ public class SystemAdminController {
         customer.setFirstName(faker.name().firstName());
         customer.setLastName(faker.name().lastName());
         customer.setStreetAddress(faker.address().streetAddress());
+        customer.setPostCode(faker.address().zipCode());
         customer.setPhoneNumber("0400000000");
         customer.setSuburb(suburb);
         customer.setRole(Role.ROLE_CUSTOMER);
@@ -104,6 +109,7 @@ public class SystemAdminController {
         serviceProvider.setEmail(faker.internet().emailAddress());
         serviceProvider.setPassword(encodedPassword);
         serviceProvider.setStreetAddress(faker.address().streetAddress());
+        serviceProvider.setPostCode(faker.address().zipCode());
         serviceProvider.setPhoneNumber("0400000000");
         serviceProvider.setCompanyName(faker.company().name());
         serviceProvider.setAbn("51824753556");
