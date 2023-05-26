@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 
+/**
+ * Entity class representing a service provider.
+ */
 @Entity
 @Data
 @AllArgsConstructor
@@ -41,11 +44,20 @@ public class ServiceProvider extends User {
     @JsonIdentityReference(alwaysAsId = true)
     private Set<ServiceRequest> qualifiedServiceRequests = new HashSet<>();
 
-
+    /**
+     * Adds a skill to the set of skills for this service provider.
+     *
+     * @param skill the skill to add
+     */
     public void addSkill(Skill skill) {
         skills.add(skill);
     }
 
+    /**
+     * Removes a skill from the set of skills for this service provider.
+     *
+     * @param skill the skill to remove
+     */
     public void removeSkill(Skill skill) {
         skills.remove(skill);
     }
@@ -70,12 +82,11 @@ public class ServiceProvider extends User {
         return result;
     }
 
-
-
     @Override
-    public String getPassword()  {
+    public String getPassword() {
         return super.getPassword();
     }
+
     @Override
     public String getUsername() {
         return this.getEmail();
@@ -100,6 +111,5 @@ public class ServiceProvider extends User {
     public boolean isEnabled() {
         return true;
     }
-
 
 }

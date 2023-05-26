@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * An entity class representing a membership.
+ */
 @Entity
 @Data
 @NoArgsConstructor
@@ -20,9 +23,16 @@ public class Membership {
     private Double price;
     private String description;
 
-    public Membership(MembershipType newMembershipType, Double amount, String s) {
+    /**
+     * Constructs a new Membership object with the given parameters.
+     *
+     * @param newMembershipType The membership type.
+     * @param amount            The price of the membership.
+     * @param description       The description of the membership.
+     */
+    public Membership(MembershipType newMembershipType, Double amount, String description) {
         this.membershipType = newMembershipType;
         this.price = amount;
-        this.description = s;
+        this.description = description;
     }
 }

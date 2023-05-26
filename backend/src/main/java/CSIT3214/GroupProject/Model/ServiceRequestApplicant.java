@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * A class representing service requests applicants.
+ */
 @Entity
 @Data
 @AllArgsConstructor

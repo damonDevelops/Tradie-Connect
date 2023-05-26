@@ -1,5 +1,8 @@
 package CSIT3214.GroupProject.Model;
 
+/**
+ * An enumeration representing different skills a service provider could have.
+ */
 public enum Skill {
     TREE_REMOVAL,
     ROOF_CLEANING,

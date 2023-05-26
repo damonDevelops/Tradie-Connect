@@ -12,6 +12,9 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A class representing service requests.
+ */
 @Entity
 @Data
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -64,12 +67,23 @@ public class ServiceRequest {
     @Lob
     private String description;
 
+    /**
+     * Adds a service request applicant to the set of applicants for this service request.
+     *
+     * @param applicant the service request applicant to add
+     */
     public void addApplicant(ServiceRequestApplicant applicant) {
         this.applicants.add(applicant);
     }
 
+    /**
+     * Accepts a service provider for this service request and updates the qualified service providers accordingly.
+     * Removes the jobs from the losers who didn't get selected.
+     *
+     * @param serviceProvider the service provider to accept
+     */
     public void acceptServiceProvider(ServiceProvider serviceProvider) {
-        //Remove the jobs from the losers who didn't get selected
+        // Remove the jobs from the losers who didn't get selected
         for (ServiceProvider sp : qualifiedServiceProviders) {
             sp.getQualifiedServiceRequests().remove(this);
         }
@@ -98,5 +112,4 @@ public class ServiceRequest {
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         return result;
     }
-
 }

@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Entity class representing a customer.
+ */
 @Entity
 @Data
 @AllArgsConstructor

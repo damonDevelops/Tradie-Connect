@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Abstract class representing a user.
+ */
 @Data
 @MappedSuperclass
 public abstract class User implements UserDetails {
@@ -38,10 +41,15 @@ public abstract class User implements UserDetails {
     @JoinColumn(name = "payment_id", referencedColumnName = "id")
     private List<Payment> payments;
 
-
+    /**
+     * Adds a payment to the user's payments list.
+     *
+     * @param payment The payment to add.
+     */
     public void addPayment(Payment payment) {
         this.payments.add(payment);
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
