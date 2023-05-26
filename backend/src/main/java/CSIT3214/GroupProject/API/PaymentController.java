@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * The PaymentController class is a REST controller that handles API requests related to payments.
+ */
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/payment")
@@ -26,16 +29,27 @@ public class PaymentController {
 
     @Autowired
     private CustomerService customerService;
+
     @Autowired
     private ServiceProviderService serviceProviderService;
+
     @Autowired
     MembershipService membershipService;
 
+    /**
+     * Processes the payment for a membership.
+     *
+     * @param stripeToken    The Stripe token.
+     * @param userId         The ID of the user.
+     * @param userType       The type of the user ("customer" or "serviceprovider").
+     * @param membershipType The type of membership.
+     * @return A ResponseEntity containing a message indicating the result of the payment request.
+     */
     @PostMapping("/pay-membership")
     public ResponseEntity<String> payMembership(@RequestParam("stripeToken") String stripeToken,
-                                      @RequestParam("userId") Long userId,
-                                      @RequestParam("userType") String userType,
-                                      @RequestParam("membershipType") MembershipType membershipType) {
+                                                @RequestParam("userId") Long userId,
+                                                @RequestParam("userType") String userType,
+                                                @RequestParam("membershipType") MembershipType membershipType) {
         try {
             User user = null;
             if (userType.equalsIgnoreCase("customer")) {
@@ -83,7 +97,7 @@ public class PaymentController {
             Payment payment = new Payment();
             if (user instanceof Customer) {
                 payment.setCustomer((Customer) user);
-            } else if (user instanceof ServiceProvider) {
+            } else {
                 payment.setServiceProvider((ServiceProvider) user);
             }
             payment.setAmount(amount);
@@ -95,7 +109,7 @@ public class PaymentController {
 
             if (user instanceof Customer) {
                 customerService.saveCustomer((Customer) user);
-            } else if (user instanceof ServiceProvider) {
+            } else {
                 serviceProviderService.saveServiceProvider((ServiceProvider) user);
             }
 
@@ -105,6 +119,11 @@ public class PaymentController {
         }
     }
 
+    /**
+     * Retrieves all payments.
+     *
+     * @return A list of all payments.
+     */
     @PreAuthorize("hasAuthority('ROLE_SYSTEM_ADMIN')")
     @GetMapping("/all")
     public List<Payment> getAllPayments() {

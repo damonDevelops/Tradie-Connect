@@ -9,12 +9,21 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * The BaseController class is an abstract class that provides common functionality for API controllers.
+ */
 public abstract class BaseController {
 
     @Autowired
     protected JwtService jwtService;
 
-
+    /**
+     * Retrieves the user ID and role from the JWT stored in the request cookies.
+     *
+     * @param request The HTTP servlet request.
+     * @return An instance of UserIdAndRole containing the user ID and role.
+     * @throws IllegalArgumentException if the JWT is not found in cookies or if the user ID is not found in the JWT claims.
+     */
     protected UserIdAndRole getUserIdAndRoleFromJwt(HttpServletRequest request) {
         String jwt = null;
         Cookie[] cookies = request.getCookies();
@@ -43,24 +52,42 @@ public abstract class BaseController {
 
         return new UserIdAndRole(userId, role);
     }
-@NoArgsConstructor
-@AllArgsConstructor
+
+    /**
+     * Inner class representing the user ID and role.
+     */
+    @NoArgsConstructor
+    @AllArgsConstructor
     protected static class UserIdAndRole {
         private Long userId;
         private Role role;
 
+        /**
+         * Returns the user ID.
+         *
+         * @return The user ID.
+         */
         public Long getUserId() {
             return userId;
         }
 
+        /**
+         * Returns the user's role.
+         *
+         * @return The user's role.
+         */
         public Role getRole() {
             return role;
         }
 
-        public void setUserId(Long userId) {this.userId = userId;}
 
-        public void setRole(Role role) {this.role = role;}
-
-
+        /**
+         * Sets the user's role.
+         *
+         * @param role The user's role to set.
+         */
+        public void setRole(Role role) {
+            this.role = role;
+        }
     }
 }

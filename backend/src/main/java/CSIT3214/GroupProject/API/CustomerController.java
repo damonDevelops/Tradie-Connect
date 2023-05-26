@@ -15,6 +15,9 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The CustomerController class is a REST controller that handles API requests related to customers.
+ */
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/customers")
@@ -29,8 +32,12 @@ public class CustomerController extends BaseController{
     @Autowired
     private SuburbService suburbService;
 
-
-
+    /**
+     * Retrieves the current customer based on the JWT stored in the request cookies.
+     *
+     * @param request The HTTP servlet request.
+     * @return The current customer.
+     */
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @GetMapping
     public Customer getCurrentCustomer(HttpServletRequest request) {
@@ -39,25 +46,48 @@ public class CustomerController extends BaseController{
         return customerService.findCustomerById(userId);
     }
 
+    /**
+     * Retrieves all customers.
+     *
+     * @return A list of all customers.
+     */
     @PreAuthorize("hasAuthority('ROLE_SYSTEM_ADMIN')")
     @GetMapping("/all")
     public List<Customer> getAllCustomers() {
         return customerService.findAllCustomers();
     }
 
+    /**
+     * Retrieves a customer by ID.
+     *
+     * @param id The customer ID.
+     * @return The customer with the specified ID.
+     */
     @PreAuthorize("hasAuthority('ROLE_SYSTEM_ADMIN')")
     @GetMapping("/{id}")
     public Customer getCustomerById(@PathVariable Long id) {
         return customerService.findCustomerById(id);
     }
 
+    /**
+     * Creates a new customer.
+     *
+     * @param customer The customer to create.
+     * @return The created customer.
+     */
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @PostMapping
     public Customer createCustomer(@RequestBody Customer customer) {
         return customerService.saveCustomer(customer);
     }
 
-
+    /**
+     * Updates the current customer's information.
+     *
+     * @param updatedFields The updated fields.
+     * @param request       The HTTP servlet request.
+     * @return The updated customer.
+     */
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @PutMapping
     public Customer updateCurrentCustomer(@RequestBody Map<String, Object> updatedFields, HttpServletRequest request) {
@@ -131,17 +161,19 @@ public class CustomerController extends BaseController{
             paymentInfo.setCardExpiry(cardExpiry);
             paymentInfo.setCardCVV(cardCVV);
 
-
             existingCustomer.setPaymentInformation(paymentInfo);
-
         }
 
         return customerService.saveCustomer(existingCustomer);
     }
 
+    /**
+     * Deletes a customer by ID.
+     *
+     * @param id The customer ID.
+     */
     @DeleteMapping("/{id}")
     public void deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
     }
-
 }
