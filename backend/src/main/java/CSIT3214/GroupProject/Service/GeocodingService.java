@@ -11,16 +11,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * Service class for geocoding operations.
+ * This class provides a method to retrieve the latitude and longitude coordinates
+ * for a given suburb and state using the Google Geocoding API.
+ */
 @Service
 public class GeocodingService {
 
     private static final Logger logger = LoggerFactory.getLogger(GeocodingService.class);
 
+    /**
+     * Retrieves the latitude and longitude coordinates for a given suburb and state.
+     *
+     * @param suburbName the name of the suburb
+     * @param state      the state of the suburb
+     * @return the latitude and longitude coordinates as a LatLng object,
+     *         or null if the coordinates cannot be fetched
+     */
     public LatLng getLatLng(String suburbName, String state) {
         logger.info("Fetching lat/lng for suburb: {}, state: {}", suburbName, state);
         String baseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
         String address = String.format("%s, %s, Australia", suburbName, state);
-        String apiKey = "AIzaSyAV4VcwlPdfyWJA1MYMUcCwgqakZYn9wMk";
+        String apiKey = "YOUR_API_KEY"; // Replace with your own API key
+
+        // Build the URL with query parameters
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .queryParam("address", address)
                 .queryParam("key", apiKey);
