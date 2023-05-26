@@ -4,6 +4,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Response DTO for Review entity.
+ */
 @Data
 @Getter
 @Setter

@@ -4,7 +4,9 @@ import CSIT3214.GroupProject.Model.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
+/**
+ * Repository interface for managing Payment entities.
+ */
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 }

@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.util.Set;
 
+/**
+ * Data Transfer Object for User information.
+ */
 @Data
 public class UserDTO {
     private String email;

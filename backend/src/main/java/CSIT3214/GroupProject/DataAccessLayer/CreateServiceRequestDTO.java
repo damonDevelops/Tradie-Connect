@@ -13,17 +13,45 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Data transfer object for creating a service request.
+ */
 @Data
 @Getter
 @Setter
 public class CreateServiceRequestDTO {
+
+    /**
+     * The ID of the service request.
+     */
     private Long serviceRequestId;
+
+    /**
+     * The cost of the service request.
+     */
     private Double cost;
+
+    /**
+     * The date and time range for the service request.
+     */
     private DateTimeRange dateTimeRange;
+
+    /**
+     * The description of the service request.
+     */
     private String description;
+
+    /**
+     * The type of service for the request.
+     */
     @Enumerated(EnumType.STRING)
     private Skill serviceType;
 
+    /**
+     * Get the start date of the service request.
+     *
+     * @return The start date of the service request, or null if not set.
+     */
     public LocalDate getStartDate() {
         if (dateTimeRange != null) {
             return dateTimeRange.getStartDate();
@@ -31,6 +59,11 @@ public class CreateServiceRequestDTO {
         return null;
     }
 
+    /**
+     * Get the start time of the service request.
+     *
+     * @return The start time of the service request, or null if not set.
+     */
     public LocalTime getStartTime() {
         if (dateTimeRange != null) {
             return dateTimeRange.getStartTime();
@@ -38,6 +71,11 @@ public class CreateServiceRequestDTO {
         return null;
     }
 
+    /**
+     * Get the end date of the service request.
+     *
+     * @return The end date of the service request, or null if not set.
+     */
     public LocalDate getEndDate() {
         if (dateTimeRange != null) {
             return dateTimeRange.getEndDate();
@@ -45,6 +83,11 @@ public class CreateServiceRequestDTO {
         return null;
     }
 
+    /**
+     * Get the end time of the service request.
+     *
+     * @return The end time of the service request, or null if not set.
+     */
     public LocalTime getEndTime() {
         if (dateTimeRange != null) {
             return dateTimeRange.getEndTime();
@@ -52,11 +95,12 @@ public class CreateServiceRequestDTO {
         return null;
     }
 
+    /**
+     * Get the service type of the request.
+     *
+     * @return The service type of the request.
+     */
     public Skill getServiceType() {
         return serviceType;
-    }
-
-    public void setServiceType(Skill serviceType) {
-        this.serviceType = serviceType;
     }
 }
