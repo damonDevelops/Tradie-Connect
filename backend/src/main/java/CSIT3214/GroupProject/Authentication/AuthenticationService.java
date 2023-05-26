@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+/**
+ * Service class that handles user authentication.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -31,7 +35,13 @@ public class AuthenticationService {
     private final SystemAdminRepository systemAdminRepository;
     private final ServiceRequestService serviceRequestService;
 
-    // Method to register a new user
+    /**
+     * Method to register a new user.
+     *
+     * @param userDTO the UserDTO containing user registration details
+     * @return an AuthenticationResponse containing the JWT token and the registered user
+     * @throws EmailAlreadyExistsException if the email is already in use by another user
+     */
     public AuthenticationResponse register(UserDTO userDTO) throws EmailAlreadyExistsException {
         UserDetails userDetails;
         User user;
@@ -39,7 +49,7 @@ public class AuthenticationService {
         if (customerRepository.findByEmail(userDTO.getEmail()).isPresent() || serviceProviderRepository.findByEmail(userDTO.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException("Email is already in use: " + userDTO.getEmail());
         }
-        
+
         // Check the user role and create an appropriate user object
         if (userDTO.getRole() == Role.ROLE_CUSTOMER) {
             var customer = new Customer();
@@ -59,7 +69,7 @@ public class AuthenticationService {
 
             Membership membership = membershipService.saveMembership(userDTO.getMembership());
             PaymentInformation paymentInfo = new PaymentInformation(userDTO.getPaymentInformation().getCardName(), userDTO.getPaymentInformation().getCardNumber(),
-                                                                    userDTO.getPaymentInformation().getCardExpiry(), userDTO.getPaymentInformation().getCardCVV());
+                    userDTO.getPaymentInformation().getCardExpiry(), userDTO.getPaymentInformation().getCardCVV());
 
             customer.setPaymentInformation(paymentInfo);
             customer.setMembership(membership);
@@ -106,7 +116,12 @@ public class AuthenticationService {
                 .build();
     }
 
-    // Method to authenticate a user
+    /**
+     * Method to authenticate a user.
+     *
+     * @param request the AuthenticationRequest containing user authentication details
+     * @return an AuthenticationResponse containing the JWT token and the authenticated user
+     */
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         // Authenticate the user using their email and password
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -129,16 +144,20 @@ public class AuthenticationService {
                 user = systemAdmin;
             }
         }
-// Generate a JWT token for the user
+
+        // Generate a JWT token for the user
         var jwtToken = jwtService.generateToken(userDetails);
 
-// Return an AuthenticationResponse containing the JWT token
+        // Return an AuthenticationResponse containing the JWT token
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .user(user)
                 .build();
     }
 
+    /**
+     * Custom exception class for email already exists error.
+     */
     static class EmailAlreadyExistsException extends Throwable {
         public EmailAlreadyExistsException(String s) {
             super(s);

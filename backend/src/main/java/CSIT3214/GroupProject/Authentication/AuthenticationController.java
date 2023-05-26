@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller class for handling authentication-related endpoints.
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -17,7 +20,13 @@ public class AuthenticationController {
     // Inject the AuthenticationService
     private final AuthenticationService authenticationService;
 
-    // Endpoint to handle user registration
+    /**
+     * Endpoint to handle user registration.
+     *
+     * @param userDTO  the UserDTO containing the user registration details
+     * @param response the HttpServletResponse for setting the JWT token cookie
+     * @return ResponseEntity containing the registration response
+     */
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @PostMapping("/SignUp")
     public ResponseEntity<?> register(@RequestBody UserDTO userDTO, HttpServletResponse response) {
@@ -34,8 +43,13 @@ public class AuthenticationController {
         }
     }
 
-
-    // Endpoint to handle user authentication
+    /**
+     * Endpoint to handle user authentication.
+     *
+     * @param request  the AuthenticationRequest containing the user credentials
+     * @param response the HttpServletResponse for setting the JWT token cookie
+     * @return ResponseEntity containing the authentication response
+     */
     @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
     @PostMapping("/SignIn")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
@@ -47,6 +61,12 @@ public class AuthenticationController {
         return ResponseEntity.ok(authResponse);
     }
 
+    /**
+     * Endpoint to handle user logout.
+     *
+     * @param response the HttpServletResponse for removing the JWT token cookie
+     * @return ResponseEntity indicating successful logout
+     */
     @PostMapping("/Logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie jwtCookie = new Cookie("JWT", "");
@@ -65,18 +85,25 @@ public class AuthenticationController {
         response.addCookie(jwtCookie);
     }
 
-    //Used for testing role based endpoint authorization
+    /**
+     * Endpoint for testing role-based authorization for customers.
+     *
+     * @return a greeting message for customers
+     */
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @GetMapping("/CustomerTest")
     public String helloCust() {
         return "You have made it Cust fam";
     }
 
+    /**
+     * Endpoint for testing role-based authorization for service providers.
+     *
+     * @return a greeting message for service providers
+     */
     @PreAuthorize("hasAuthority('ROLE_SERVICE_PROVIDER')")
     @GetMapping("/ServiceProviderTest")
     public String helloSP() {
         return "You have made it SP fam";
     }
 }
-
-

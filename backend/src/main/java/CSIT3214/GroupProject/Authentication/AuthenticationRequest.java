@@ -1,17 +1,25 @@
 package CSIT3214.GroupProject.Authentication;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationRequest {
 
     private String email;
-    String password;
+    private String password;
 
+    /**
+     * Constructor for the AuthenticationRequest class.
+     *
+     * @param email    the user's email
+     * @param password the user's password
+     */
+    public AuthenticationRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
