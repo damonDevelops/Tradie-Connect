@@ -9,6 +9,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 /**
  * Component class to initialize data upon application startup.
  */
@@ -41,7 +43,14 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         createSystemAdmin();
-        generateTestData();
+
+        boolean generateTestData = Arrays.stream(args).anyMatch("generateTestData"::equalsIgnoreCase);
+
+        if (generateTestData) {
+            generateTestData();
+        } else {
+            System.out.println("Test data not generated.");
+        }
     }
 
     /**
