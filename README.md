@@ -101,3 +101,6 @@ This repository is for the development of a system for the University of Wollong
 
 ## Documentation
 To see the documentation visit our [Google Doc](https://docs.google.com/document/d/1PS9mC8sOwt8EZZLfs-ami2DYGCWrlpeQ2m_ioBLnk88/edit#heading=h.sjnh6yl2tkrf)
+
+## A Note on Contribution
+This repo is a combination of two seperate repositories. We seperated them so the backend and frontend developers didn't get in the way of one another. To clarify the contribution by each member of the development team, Brendan Aldrton did 100% of the backend programming and Damon O'Neil and Jesse Surridge did equal work on the frontend (50% each). To see an extension of this contribution, visit our [frontend repo](https://github.com/damonDevelops/Tradie-Connect-Frontend/graphs/contributors) 
