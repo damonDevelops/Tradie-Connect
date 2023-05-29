@@ -28,16 +28,14 @@ import Cookies from "js-cookie";
 
 import DoneIcon from "@mui/icons-material/Done";
 
-//import { DataGrid } from "@mui/x-data-grid";
-
 const theme = createTheme();
 
 export default function AvailableRequest() {
   const fetchURL = "http://localhost:8080/api/service-providers";
 
+  // state variables for functions
   const { data: responseData } = useFetchData(fetchURL); // fetches currently logged in service-provider
   const [serviceRequests, setRequests] = useState([]);
-
 
   const instance = axios.create({
     withCredentials: true,
@@ -59,7 +57,6 @@ export default function AvailableRequest() {
 
     fetchData();
   }, [responseData]);
-
 
   // maps service requests and only includes the data we need to show in a row
   const rows = serviceRequests.map(
@@ -99,7 +96,7 @@ export default function AvailableRequest() {
           height: "auto",
         }}
       >
-        <Typography sx={{overflow: "auto"}}  variant="h4" gutterBottom>
+        <Typography sx={{ overflow: "auto" }} variant="h4" gutterBottom>
           Available Requests
         </Typography>
         <RequestTable data={rows} />
@@ -109,15 +106,17 @@ export default function AvailableRequest() {
 }
 
 function RequestTable({ data }) {
+  // state variables for functions
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const Router = useRouter();
 
+  // function for changing pages on the table
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-
+  // handler for changing the rows on the table
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -125,7 +124,6 @@ function RequestTable({ data }) {
 
   // to get user id
   const userInfo = jwtDecode(Cookies.get("JWT"));
-
 
   // styles for the header row
   const headerStyles = {
@@ -138,6 +136,8 @@ function RequestTable({ data }) {
     textAlign: "center",
   };
 
+  // variable uses data.slice to cut the information in the table
+  // based on the rows per page and page number
   const rowsToDisplay = data.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
@@ -149,7 +149,6 @@ function RequestTable({ data }) {
         <TableHead>
           <TableRow>
             <TableCell sx={headerStyles}>Work Type</TableCell>
-            {/* <TableCell sx={headerStyles}>Work Status</TableCell> */}
             <TableCell sx={headerStyles}>Start Date</TableCell>
             <TableCell sx={headerStyles}>Finish Date</TableCell>
             <TableCell sx={headerStyles}>Location (Suburb)</TableCell>
@@ -166,9 +165,7 @@ function RequestTable({ data }) {
                   ? capitaliseWords(row.serviceType)
                   : row.serviceType}
               </TableCell>
-              {/* <TableCell sx={cellStyles}>
-                {row.status ? capitaliseWords(row.status) : row.status}
-              </TableCell> */}
+
               <TableCell sx={cellStyles}>
                 {row.scheduledStartDate
                   ? formatDate(row.scheduledStartDate)
@@ -220,6 +217,8 @@ function RequestTable({ data }) {
   );
 }
 
+// function takes string and capitalises the first letter of each word
+// and lower cases every other word
 function capitaliseWords(str) {
   return str
     .toLowerCase()
@@ -228,6 +227,7 @@ function capitaliseWords(str) {
     .join(" ");
 }
 
+// takes date in format of array[YYYY, MM, DD] and changes it to DD/MM/YYYY
 function formatDate(date) {
   return date[2] + "/" + date[1] + "/" + date[0];
 }

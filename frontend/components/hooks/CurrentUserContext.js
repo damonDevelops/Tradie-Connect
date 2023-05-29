@@ -1,8 +1,10 @@
 import React from "react";
 import axios from "axios";
 
+// creates context
 export const CurrentUserContext = React.createContext();
 
+// function returns current user information
 export const CurrentUserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = React.useState(null);
 
@@ -28,5 +30,3 @@ export const CurrentUserProvider = ({ children }) => {
 };
 
 export const useCurrentUser = () => React.useContext(CurrentUserContext);
-
-

@@ -23,16 +23,20 @@ import TablePagination from "@mui/material/TablePagination";
 const theme = createTheme();
 
 export default function PastRequests() {
+  // state variable to hold data
   const [data, setData] = useState([]);
 
+  // use effect to trigger fetch data
   useEffect(() => {
     fetchData();
   }, []);
 
+  // creates instance of axios request
   const instance = axios.create({
     withCredentials: true,
   });
 
+  // function gets data through get request
   const fetchData = async () => {
     try {
       const response = await instance.get(
@@ -80,7 +84,7 @@ export default function PastRequests() {
           height: "auto",
         }}
       >
-        <Typography sx={{overflow: "auto"}}  variant="h4" gutterBottom>
+        <Typography sx={{ overflow: "auto" }} variant="h4" gutterBottom>
           Past Requests
         </Typography>
         <RequestTable data={rows} />
@@ -90,14 +94,17 @@ export default function PastRequests() {
 }
 
 function RequestTable({ data }) {
+  // state variables for the table
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const Router = useRouter();
 
+  // function for changing pages on the table
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
+  // handler for changing the rows on the table
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -114,6 +121,8 @@ function RequestTable({ data }) {
     textAlign: "center",
   };
 
+  // variable uses data.slice to cut the information in the table
+  // based on the rows per page and page number
   const rowsToDisplay = data.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
@@ -196,6 +205,8 @@ function RequestTable({ data }) {
   );
 }
 
+// function takes string and capitalises the first letter of each word
+// and lower cases every other word
 function capitaliseWords(str) {
   return str
     .toLowerCase()
@@ -204,6 +215,7 @@ function capitaliseWords(str) {
     .join(" ");
 }
 
+// takes date in format of array[YYYY, MM, DD] and changes it to DD/MM/YYYY
 function formatDate(date) {
   return date[2] + "/" + date[1] + "/" + date[0];
 }

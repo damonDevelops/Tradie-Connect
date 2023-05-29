@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+// function takes an api url and returns the data
 const useFetchData = (url) => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
@@ -19,7 +20,6 @@ const useFetchData = (url) => {
     };
     fetchData();
   }, [url]);
-
 
   return { data };
 };

@@ -42,11 +42,13 @@ const instance = axios.create({
 });
 
 export default function ViewRequest() {
+  // router used to determine where the user came from
   const router = useRouter();
   const requestId = router.query.id;
   const fromRequests = router.query.fromRequests;
 
-
+  // useEffect to redirect customer that tries to access page from anywhere
+  // but the requests page
   useEffect(() => {
     if (!fromRequests) {
       router.back();
@@ -61,17 +63,22 @@ export default function ViewRequest() {
         Service Request Details
       </Typography>
 
+      {/* checks the customer type through the router and shows the correct view*/}
       {router.query.customer ? <CustomerView /> : null}
       {router.query.serviceProvider ? <ServiceProviderView /> : null}
     </ThemeProvider>
   );
 }
 
-
+// CustomerView returns the customer view of service order based on user type = customer
 function CustomerView() {
+  // router used for re-directing
   const router = useRouter();
+  // fetch url for customer service orders
   const fetchURL =
     "http://localhost:8080/api/service-requests/" + router.query.id;
+
+  // gets data using fetchData function
   const { data: responseData } = useFetchData(fetchURL);
 
   return (
@@ -188,7 +195,6 @@ function CustomerView() {
                   fullWidth
                 />
               </Grid>
-              {/*maybe nest grid inside the tradie table function*/}
               <Grid item xs={12}>
                 {responseData.status == "PENDING" ? (
                   <TradieTable data={responseData} />
@@ -200,6 +206,7 @@ function CustomerView() {
           <Typography variant="h6">Loading...</Typography>
         )}
       </Paper>
+      {/* following lines check the status of service order and shows the correct information based on the status */}
       {(responseData.status == "COMPLETED" ||
         responseData.status == "ACCEPTED") && (
         <ServiceProviderInfo serviceProvider={responseData.serviceProvider} />
@@ -211,6 +218,7 @@ function CustomerView() {
   );
 }
 
+// function to show the service provider information
 function ServiceProviderInfo({ serviceProvider }) {
   return (
     <>
@@ -291,7 +299,9 @@ function ServiceProviderInfo({ serviceProvider }) {
   );
 }
 
+// review component to show the review table once request is completed
 function ReviewComponent({ dataObject, userType }) {
+  // state variables for the function
   const [value, setValue] = React.useState(0);
   const [comment, setComment] = React.useState("");
   const [reviewExists, setReviewExists] = React.useState(
@@ -306,6 +316,7 @@ function ReviewComponent({ dataObject, userType }) {
     }
   }, []);
 
+  // function to handle the review request
   const handleReview = async () => {
     try {
       const response = instance
@@ -478,8 +489,7 @@ function TradieTable({ data }) {
         id;
       const response = instance.post(postURL);
       setFinalOpen(true);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   // styles for the header row
@@ -577,7 +587,6 @@ function TradieTable({ data }) {
                   </Link>
                 </DialogActions>
               </Dialog>
-              {/*Add more TableCell components for additional columns*/}
             </TableRow>
           ))}
         </TableBody>
@@ -604,8 +613,7 @@ function ServiceProviderView() {
     try {
       setSuburb(responseData.customer.suburb.name);
       setPostcode(responseData.customer.postCode);
-    } catch (error) {
-    }
+    } catch (error) {}
   }, [responseData]);
 
   // to get user id
@@ -640,10 +648,10 @@ function ServiceProviderView() {
         "/apply";
       const response = instance.post(postURL);
       setHasApplied(true);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
+  // use effect determins if job has been completed or can be marked as completed
   const [canComplete, setCanComplete] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(false);
   useEffect(() => {
@@ -665,8 +673,7 @@ function ServiceProviderView() {
       const response = instance.post(postURL);
       setHasCompleted(true);
       setFinalOpen(true);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   return (
@@ -865,7 +872,6 @@ function ServiceProviderView() {
               )}
               <Dialog
                 open={finalAlertDialogOpen}
-                //onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
               >
@@ -925,6 +931,7 @@ function ServiceProviderView() {
           <Typography variant="h6">Loading...</Typography>
         )}
       </Paper>
+      {/* following lines check the status of service order and shows the correct information based on the status */}
       {(responseData.status == "COMPLETED" ||
         responseData.status == "ACCEPTED") && (
         <CustomerInfo customer={responseData.customer} />
