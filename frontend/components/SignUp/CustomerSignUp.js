@@ -95,6 +95,7 @@ export default function CustomerSignUp() {
     if (reason === "clickaway") {
       return;
     }
+    setFailedSignUp(false);
     setMainAlert(false)
   };
 

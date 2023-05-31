@@ -14,7 +14,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
-import { useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -30,15 +29,6 @@ const theme = createTheme();
 
 
 export default function SignIn() {
-  //useEffect checks the role of the user and redirects them to the correct page
-  useEffect(() => {
-    if (checkRole() == "ROLE_CUSTOMER") {
-      router.push("/Customer");
-    } else if (checkRole() == "ROLE_SERVICE_PROVIDER") {
-      router.push("/Service-Provider");
-    } else return;
-  }, []);
-
   //time for loading backdrop
   const timer = React.useRef();
 
