@@ -11,17 +11,14 @@ const withAuth = (WrappedComponent, allowedRoles) => {
     useEffect(() => {
       // Check if the user has the necessary role to access the page
       if (allowedRoles.includes(checkRole())) {
-        // replace "Admin" with user.role
         setIsAuthorized(true);
       } else {
         router.push("/unauthorized");
       }
-    }, []); // replace "Admin" with user.role
+    }, []);
 
     // Render the wrapped component if the user has the necessary role
-    return isAuthorized ? ( // replace "Admin" with user.role
-      <WrappedComponent {...props} />
-    ) : null;
+    return isAuthorized ? <WrappedComponent {...props} /> : null;
   };
 
   // Set the display name for debugging purposes

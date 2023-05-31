@@ -14,7 +14,7 @@ import Stack from "@mui/material/Stack";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -112,13 +112,6 @@ export default function CustomerSignUp() {
     { value: "POOL_CLEANING", label: "Pool Cleaning" },
   ];
 
-  // used if no rating available to show functionality
-  function returnRandomRating() {
-    const max = 5.0;
-    const min = 2.5;
-    return Math.random() * (max - min) + min;
-  }
-
   //function for handling the submission of the form
   //Checks for invalid input and throws an error message to the user
   //Otherwise, the system makes a post request to the backend
@@ -144,8 +137,7 @@ export default function CustomerSignUp() {
             abn: abn,
             phoneNumber: newPhoneNumber,
             streetAddress: address,
-            rating: returnRandomRating(),
-            skills: [returnTrade], // this needs to be updated since returnTrade returns "Tree Removal" and not the capitalised version
+            skills: [returnTrade],
             suburb: {
               name: city,
               state: returnState,
@@ -429,26 +421,18 @@ export default function CustomerSignUp() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle
-
-          id="alert-dialog-title"
-        >
+        <DialogTitle id="alert-dialog-title">
           {" Sign Up Failed!"} <ErrorOutlineIcon />
         </DialogTitle>
         <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-          >
+          <DialogContentText id="alert-dialog-description">
             Unfortunately, sign up failed. Please ensure the email address you
-            entered is not already in use. If it is not in use, please try again later. 
+            entered is not already in use. If it is not in use, please try again
+            later.
           </DialogContentText>
         </DialogContent>
-        <DialogActions
-        >
-          <Button
-            onClick={handleClose}
-            autoFocus
-          >
+        <DialogActions>
+          <Button onClick={handleClose} autoFocus>
             Go Back
           </Button>
         </DialogActions>
