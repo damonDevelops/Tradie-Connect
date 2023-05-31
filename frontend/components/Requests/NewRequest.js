@@ -63,7 +63,6 @@ export default function NewRequest() {
   const [description, setDescription] = React.useState("");
   const [membershipType, setMembershipType] = React.useState("");
 
-  
   //variable for the date error message
   const [mainAlertOpen, setMainAlertOpen] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState("");
@@ -173,21 +172,17 @@ export default function NewRequest() {
 
   //fetches the data from the database
   const fetchData = async () => {
-
-    try{
+    try {
       const response = await instance.get(
         "http://localhost:8080/api/customers"
       );
-  
-      setMembershipType(response.data.membership.membershipType);
-    }
-    catch{
-      handleDateAlert("An error occurred while fetching account information")
-    }
-    
 
+      setMembershipType(response.data.membership.membershipType);
+    } catch {
+      handleDateAlert("An error occurred while fetching account information");
+    }
   };
-  
+
   //handles the closing of the final alert
   const handleClose = () => {
     setMainAlertOpen(false);
@@ -202,7 +197,7 @@ export default function NewRequest() {
   //function to submit the new request
   const handleSubmit = (event) => {
     event.preventDefault();
-    
+
     //validation for start and end date
     if (!date_regex.test(startDate) || !date_regex.test(endDate)) {
       handleDateAlert("Invalid Date Format, please use DD/MM/YYYY");
@@ -216,7 +211,10 @@ export default function NewRequest() {
         //makes the post request to the backend
         instance
           .post(`http://localhost:8080/api/service-requests/create`, {
-            cost: membershipType == "CLIENT_SUBSCRIPTION" ? 0 : diffDays * multiplier + 200,
+            cost:
+              membershipType == "CLIENT_SUBSCRIPTION"
+                ? 0
+                : diffDays * multiplier + 200,
             description: description,
             serviceType: WorkType.toUpperCase(),
             dateTimeRange: {
@@ -228,10 +226,13 @@ export default function NewRequest() {
           })
           .then((res) => {
             setFinalOpen(true);
+          })
+          .catch((error) => {
+            if (error.response.status === 403)
+              handleDateAlert("Error submitting request, please try again");
           });
-      } 
-      catch (error) {
-        handleDateAlert("Error submitting request, please try again")
+      } catch (error) {
+        handleDateAlert("Error submitting request, please try again");
       }
     }
   };
@@ -248,7 +249,7 @@ export default function NewRequest() {
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <form onSubmit={handleSubmit}>
-          <Typography sx={{overflow: "auto"}}  variant="h4" gutterBottom>
+            <Typography sx={{ overflow: "auto" }} variant="h4" gutterBottom>
               New Request
             </Typography>
 
@@ -310,7 +311,6 @@ export default function NewRequest() {
             <br />
             {membershipType == "PAY_ON_DEMAND" && (
               <Typography sx={{ mt: 2 }} variant="h6" gutterBottom>
-                
                 Total Cost: ${diffDays * multiplier + 200}
               </Typography>
             )}
