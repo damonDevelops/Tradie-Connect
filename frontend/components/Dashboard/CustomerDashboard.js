@@ -44,8 +44,10 @@ import { DialogActions } from "@mui/material";
 import { Button } from "@mui/material";
 import Cookies from "js-cookie";
 import {
-  Experimental_CssVarsProvider as CssVarsProvider, useColorScheme
+  Experimental_CssVarsProvider as CssVarsProvider,
+  useColorScheme,
 } from "@mui/material/styles";
+import withAuth from "../router/withAuth";
 
 //drawer and sidebar styling
 const drawerWidth = 240;
@@ -115,7 +117,7 @@ function ModeToggle() {
 
 //main dashboard function
 //props contains the page content
-export default function CustomerDash(props) {
+function CustomerDash(props) {
   //drawer and sidebar state
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -137,7 +139,6 @@ export default function CustomerDash(props) {
   //router functionality
   const router = useRouter();
   const homePath = "/Customer";
-
 
   useEffect(() => {
     if (homePath === router.pathname) setHomeWindow(true);
@@ -385,4 +386,4 @@ export default function CustomerDash(props) {
   );
 }
 
-//export default withAuth(CustomerDash, ["ROLE_CUSTOMER"]);
+export default withAuth(CustomerDash, ["ROLE_CUSTOMER"]);

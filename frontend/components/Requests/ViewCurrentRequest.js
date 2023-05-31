@@ -283,15 +283,7 @@ function ServiceProviderInfo({ serviceProvider }) {
             <Typography>
               <b>Rating:</b>
             </Typography>
-            <Rating
-              readOnly
-              precision={0.5}
-              value={
-                serviceProvider.rating
-                  ? serviceProvider.rating
-                  : returnRandomRating()
-              }
-            />
+            <Rating readOnly precision={0.5} value={serviceProvider.rating} />
           </Grid>
         </Grid>
       </Paper>
@@ -519,7 +511,7 @@ function TradieTable({ data }) {
                 {
                   <SmallerRating
                     name="rating"
-                    value={row.rating ? row.rating : returnRandomRating()}
+                    value={row.rating}
                     precision={0.5}
                     readOnly
                   />
@@ -999,11 +991,4 @@ function capitaliseWords(str) {
 // date[0] = year, date[1] = month, date[2] = day
 function formatDate(date) {
   return date[2] + "/" + date[1] + "/" + date[0];
-}
-
-// used if no rating available to show functionality
-function returnRandomRating() {
-  const max = 5.0;
-  const min = 2.5;
-  return Math.random() * (max - min) + min;
 }
