@@ -36,8 +36,6 @@ export default function Report() {
   const { data: serviceProviderData } = useFetchData(serviceProviderURL);
   const { data: requestData } = useFetchData(requestURL);
 
-  
-
   const instance = axios.create({
     withCredentials: true,
   });
@@ -50,21 +48,18 @@ export default function Report() {
     return array.flat();
   }, [customerData]);
 
-  //useEffect to fetch service requests
-  if (typeof customerData != "undefined") {
-    useEffect(() => {
-      const fetchData = async () => {
-        if (serviceRequestArray) {
-          const promises = serviceRequestArray.map((id) =>
-            instance.get("http://localhost:8080/api/service-requests/" + id)
-          );
-          const requests = await Promise.all(promises);
-          setServiceRequestsArray(requests.map((response) => response.data));
-        }
-      };
-      fetchData().then(() => setLoading(false));
-    }, [serviceRequestArray]);
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (serviceRequestArray) {
+        const promises = serviceRequestArray.map((id) =>
+          instance.get("http://localhost:8080/api/service-requests/" + id)
+        );
+        const requests = await Promise.all(promises);
+        setServiceRequestsArray(requests.map((response) => response.data));
+      }
+    };
+    fetchData().then(() => setLoading(false));
+  }, [serviceRequestArray]);
 
   //for each request in requestData, store the total cost in a variable called totalCost
   const totalCost = requestData.reduce((total, request) => {
@@ -160,51 +155,6 @@ export default function Report() {
         ).length,
       10,
       190
-    );
-
-    //check which suburbs each customer are from and return the top three suburbs
-    const topThreeSuburbs = customerData
-      .map((customer) => customer.suburb.name)
-      .reduce((acc, suburb) => {
-        if (acc[suburb]) {
-          acc[suburb] += 1;
-        } else {
-          acc[suburb] = 1;
-        }
-        return acc;
-      }, {});
-    const topThreeSuburbsArray = Object.entries(topThreeSuburbs)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3);
-    doc.setFontSize(18);
-    doc.text("Top 3 Suburbs: ", 10, 210);
-    doc.setFontSize(12);
-    doc.text(
-      "1. " +
-        topThreeSuburbsArray[0][0] +
-        " - " +
-        topThreeSuburbsArray[0][1] +
-        " customers",
-      10,
-      220
-    );
-    doc.text(
-      "2. " +
-        topThreeSuburbsArray[1][0] +
-        " - " +
-        topThreeSuburbsArray[1][1] +
-        " customers",
-      10,
-      230
-    );
-    doc.text(
-      "3. " +
-        topThreeSuburbsArray[2][0] +
-        " - " +
-        topThreeSuburbsArray[2][1] +
-        " customers",
-      10,
-      240
     );
 
     if (customerData.length > 0) {
