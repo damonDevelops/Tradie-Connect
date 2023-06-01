@@ -36,8 +36,6 @@ export default function Report() {
   const { data: serviceProviderData } = useFetchData(serviceProviderURL);
   const { data: requestData } = useFetchData(requestURL);
 
-  
-
   const instance = axios.create({
     withCredentials: true,
   });
@@ -163,7 +161,7 @@ export default function Report() {
     );
 
     //check which suburbs each customer are from and return the top three suburbs
-    
+
     const topThreeSuburbs = customerData
       .map((customer) => customer.suburb.name)
       .reduce((acc, suburb) => {
@@ -180,33 +178,39 @@ export default function Report() {
     doc.setFontSize(18);
     doc.text("Top 3 Suburbs: ", 10, 210);
     doc.setFontSize(12);
-    doc.text(
-      "1. " +
-        topThreeSuburbsArray[0][0] +
-        " - " +
-        topThreeSuburbsArray[0][1] +
-        " customers",
-      10,
-      220
-    );
-    doc.text(
-      "2. " +
-        topThreeSuburbsArray[1][0] +
-        " - " +
-        topThreeSuburbsArray[1][1] +
-        " customers",
-      10,
-      230
-    );
-    doc.text(
-      "3. " +
-        topThreeSuburbsArray[2][0] +
-        " - " +
-        topThreeSuburbsArray[2][1] +
-        " customers",
-      10,
-      240
-    );
+    if (topThreeSuburbsArray.length > 0) {
+      doc.text(
+        "1. " +
+          topThreeSuburbsArray[0][0] +
+          " - " +
+          topThreeSuburbsArray[0][1] +
+          " customers",
+        10,
+        220
+      );
+    }
+    if (topThreeSuburbsArray.length > 1) {
+      doc.text(
+        "2. " +
+          topThreeSuburbsArray[1][0] +
+          " - " +
+          topThreeSuburbsArray[1][1] +
+          " customers",
+        10,
+        230
+      );
+    }
+    if (topThreeSuburbsArray.length > 2) {
+      doc.text(
+        "3. " +
+          topThreeSuburbsArray[2][0] +
+          " - " +
+          topThreeSuburbsArray[2][1] +
+          " customers",
+        10,
+        240
+      );
+    }
 
     if (customerData.length > 0) {
       doc.addPage(null, "l");
@@ -309,7 +313,9 @@ export default function Report() {
             return [
               serviceRequest.id,
               serviceRequest.customer.firstName,
-              (serviceRequest.serviceProvider && serviceRequest.serviceProvider.companyName) || "N/A", // Add an additional conditional check
+              (serviceRequest.serviceProvider &&
+                serviceRequest.serviceProvider.companyName) ||
+                "N/A", // Add an additional conditional check
               capitaliseWords(serviceRequest.serviceType),
               formatDate(serviceRequest.scheduledStartDate),
               formatDate(serviceRequest.scheduledEndDate),
@@ -349,7 +355,6 @@ export default function Report() {
           click the button below.
         </Typography>
         <br />
-
         <LoadingButton
           variant="contained"
           loading={loading}
