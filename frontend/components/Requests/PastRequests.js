@@ -37,19 +37,19 @@ export default function PastRequests() {
   });
 
   // function gets data through get request
-  const fetchData = async () => {
-    try {
-      const response = await instance.get(
-        "http://localhost:8080/api/service-requests/user-requests",
-        {
-          responseType: "json",
-        }
-      );
-      setData(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+  const fetchData = () => {
+    instance
+      .get("http://localhost:8080/api/service-requests/user-requests", {
+        responseType: "json",
+      })
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
+  
 
   // maps the data from the request into a rows array with only the data required to be shown
   const rows = data

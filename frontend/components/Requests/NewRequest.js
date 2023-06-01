@@ -171,16 +171,15 @@ export default function NewRequest() {
   };
 
   //fetches the data from the database
-  const fetchData = async () => {
-    try {
-      const response = await instance.get(
-        "http://localhost:8080/api/customers"
-      );
-
-      setMembershipType(response.data.membership.membershipType);
-    } catch {
-      handleDateAlert("An error occurred while fetching account information");
-    }
+  const fetchData = () => {
+    instance
+      .get("http://localhost:8080/api/customers")
+      .then((response) => {
+        setMembershipType(response.data.membership.membershipType);
+      })
+      .catch((error) => {
+        handleDateAlert("An error occurred: " + error);
+      });
   };
 
   //handles the closing of the final alert
@@ -227,11 +226,7 @@ export default function NewRequest() {
           setFinalOpen(true);
         })
         .catch((error) => {
-          if (error.response && error.response.status === 403) {
-            handleDateAlert("Error submitting request, please try again");
-          } else {
-            handleDateAlert("Error submitting request, please try again");
-          }
+          handleDateAlert("Error submitting request: " + error);
         });
     }
   };
