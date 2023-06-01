@@ -16,13 +16,13 @@ import autoTable from "jspdf-autotable";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 export default function ServiceProviderReport() {
-   //loading state for if the data is still being fetched
-   const [loading, setLoading] = useState(true);
+  //loading state for if the data is still being fetched
+  const [loading, setLoading] = useState(true);
 
   //fetch url and data
   const fetchURL = "http://localhost:8080/api/service-providers";
   const { data: responseData } = useFetchData(fetchURL);
-  
+
   //variable for storing service requests
   const [serviceRequests, setRequests] = useState([]);
   const instance = axios.create({
@@ -35,7 +35,7 @@ export default function ServiceProviderReport() {
   //storing day for the file name
   const today = new Date();
   const fileName = "Tradie_Connect_Report_" + today.toLocaleDateString("en-AU");
-  
+
   //variables for requests and payments
   const serviceProviderInfoURL = "http://localhost:8080/api/service-providers";
   const { data: serviceProvider } = useFetchData(serviceProviderInfoURL);
@@ -46,7 +46,7 @@ export default function ServiceProviderReport() {
 
   const { data: requestData } = useFetchData(currentRequestURL);
 
-  if(typeof requestData != "undefined"){
+  if (typeof requestData != "undefined") {
     useEffect(() => {
       const fetchData = async () => {
         if (responseData && responseData.serviceRequests) {
@@ -60,7 +60,6 @@ export default function ServiceProviderReport() {
       fetchData().then(() => setLoading(false));
     }, [responseData]);
   }
-
 
   //filtering requests by status for current requests
   const currentRequests = serviceRequests
@@ -164,20 +163,26 @@ export default function ServiceProviderReport() {
     doc.text("Statistics", 10, 100);
     doc.setFontSize(12);
     doc.text("Total Requests: " + requestData.length, 10, 110);
-    doc.text("Total Completed Requests: " + completedRequests.length, 10, 120);
+    doc.text(
+      "Total Accepted Requests: " +
+        currentRequests.filter((x) => x[2] == "Accepted").length,
+      10,
+      120
+    );
+    doc.text("Total Completed Requests: " + completedRequests.length, 10, 130);
     doc.text(
       "Total Money Made: $" +
         totalCost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"),
       10,
-      130
+      140
     );
     doc.text(
       "Average Cost: $" +
         averageCost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"),
       10,
-      140
+      150
     );
-    doc.text("Average Rating: " + averageReview.toFixed(2), 10, 150);
+    doc.text("Average Rating: " + averageReview.toFixed(2), 10, 160);
 
     //check if there are any current requests otherwise print no current requests to the pdf
     if (currentRequests.length > 0) {
@@ -271,7 +276,7 @@ export default function ServiceProviderReport() {
           height: "auto",
         }}
       >
-        <Typography sx={{overflow: "auto"}}  variant="h4" gutterBottom>
+        <Typography sx={{ overflow: "auto" }} variant="h4" gutterBottom>
           Reports
         </Typography>
         <Divider />

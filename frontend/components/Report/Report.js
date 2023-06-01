@@ -85,7 +85,6 @@ export default function Report() {
         "$" + request.cost,
       ];
     });
-  console.log(requests);
 
   //make an array of arrays from requestedData that only contains requests where the status is COMPLETED
   const completedRequests = serviceRequests
