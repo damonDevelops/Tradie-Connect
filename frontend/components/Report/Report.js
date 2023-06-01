@@ -10,8 +10,12 @@ import useFetchData from "../hooks/fetchData";
 import { Divider } from "@mui/material";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 export default function Report() {
+  //loading state for if the data is still being fetched
+  const [loading, setLoading] = useState(true);
+
   //gets the day for file name
   const today = new Date();
   const fileName = "Tradie_Connect_Report_" + today.toLocaleDateString("en-AU");
@@ -35,6 +39,7 @@ export default function Report() {
 
   //useEffect maps the service requests and payments to the customer
   //needs to be done this way because the customer data doesn't contain all data
+  if (typeof customerData != "undefined") {
   useEffect(() => {
     const fetchData = async () => {
       if (customerData && customerData.serviceRequests) {
@@ -48,8 +53,9 @@ export default function Report() {
         );
       }
     };
-    fetchData();
+    fetchData().then(() => setLoading(false));
   }, [customerData]);
+}
 
   //for each request in requestData, store the total cost in a variable called totalCost
   const totalCost = requestData.reduce((total, request) => {
@@ -244,9 +250,18 @@ export default function Report() {
         </Typography>
         <br />
 
-        <Button variant="contained" onClick={createPDF}>
-          Download PDF
-        </Button>
+        <LoadingButton
+          variant="contained"
+          loading={loading}
+          disabled={!customerData || customerData.length === 0}
+          onClick={createPDF}
+        >
+          {customerData === undefined
+            ? "Could not connect to server, can't generate report"
+            : customerData && customerData.length === 0
+            ? "No data to generate PDF"
+            : "Download PDF"}
+        </LoadingButton>
       </Paper>
     </React.Fragment>
   );
