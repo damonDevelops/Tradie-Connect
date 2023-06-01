@@ -19,7 +19,7 @@ export default function Report() {
   //gets the day for file name
   const today = new Date();
   const fileName = "Tradie_Connect_Report_" + today.toLocaleDateString("en-AU");
-  
+
   //URLs for fetching data
   const customerURL = "http://localhost:8080/api/customers";
   const requestURL = "http://localhost:8080/api/service-requests/user-requests";
@@ -40,22 +40,22 @@ export default function Report() {
   //useEffect maps the service requests and payments to the customer
   //needs to be done this way because the customer data doesn't contain all data
   if (typeof customerData != "undefined") {
-  useEffect(() => {
-    const fetchData = async () => {
-      if (customerData && customerData.serviceRequests) {
-        const objectPromise = customerData.serviceRequests.map((id) =>
-          instance.get(`http://localhost:8080/api/service-requests/${id}`)
-        );
-        const customerRequests = await Promise.all(objectPromise);
-        setRequests(customerRequests.map((request) => request.data));
-        setPayments(
-          customerRequests.map((request) => request.data.customer.payments)
-        );
-      }
-    };
-    fetchData().then(() => setLoading(false));
-  }, [customerData]);
-}
+    useEffect(() => {
+      const fetchData = async () => {
+        if (customerData && customerData.serviceRequests) {
+          const objectPromise = customerData.serviceRequests.map((id) =>
+            instance.get(`http://localhost:8080/api/service-requests/${id}`)
+          );
+          const customerRequests = await Promise.all(objectPromise);
+          setRequests(customerRequests.map((request) => request.data));
+          setPayments(
+            customerRequests.map((request) => request.data.customer.payments)
+          );
+        }
+      };
+      fetchData().then(() => setLoading(false));
+    }, [customerData]);
+  }
 
   //for each request in requestData, store the total cost in a variable called totalCost
   const totalCost = requestData.reduce((total, request) => {
@@ -69,7 +69,11 @@ export default function Report() {
   //filters request by created or pending
   const requests = requestData
     .filter((request) => {
-      return request.status == "CREATED" || request.status == "PENDING";
+      return (
+        request.status == "CREATED" ||
+        request.status == "PENDING" ||
+        request.status == "ACCEPTED"
+      );
     })
     .map((request) => {
       return [
@@ -81,6 +85,7 @@ export default function Report() {
         "$" + request.cost,
       ];
     });
+  console.log(requests);
 
   //make an array of arrays from requestedData that only contains requests where the status is COMPLETED
   const completedRequests = serviceRequests
@@ -146,9 +151,36 @@ export default function Report() {
     doc.setFontSize(12);
     doc.text("Total Requests: " + requestData.length, 10, 120);
     doc.text("Total Completed Requests: " + completedRequests.length, 10, 130);
-    doc.text("Total Pending Requests: " + requests.length, 10, 140);
-    doc.text("Total Cost: $" + totalCost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'), 10, 150);
-    doc.text("Average Cost: $" + averageCost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'), 10, 160);
+    doc.text(
+      "Total Created Requests: " +
+        requests.filter((x) => x[4] == "CREATED").length,
+      10,
+      140
+    );
+    doc.text(
+      "Total Pending Requests: " +
+        requests.filter((x) => x[4] == "PENDING").length,
+      10,
+      150
+    );
+    doc.text(
+      "Total Accepted Requests: " +
+        requests.filter((x) => x[4] == "ACCEPTED").length,
+      10,
+      160
+    );
+    doc.text(
+      "Total Cost: $" +
+        totalCost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"),
+      10,
+      170
+    );
+    doc.text(
+      "Average Cost: $" +
+        averageCost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,"),
+      10,
+      180
+    );
 
     doc.setFontSize(20);
 
@@ -239,7 +271,7 @@ export default function Report() {
           height: "auto",
         }}
       >
-        <Typography sx={{overflow: "auto"}}  variant="h4" gutterBottom>
+        <Typography sx={{ overflow: "auto" }} variant="h4" gutterBottom>
           Reports
         </Typography>
         <Divider />
@@ -298,7 +330,7 @@ function tConvert(time) {
 }
 
 //function to format the date and time
-function formatCompleteDate(time, date){
+function formatCompleteDate(time, date) {
   let hour = time[0];
   const minute = time[1];
   let period = "AM";

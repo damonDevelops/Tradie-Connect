@@ -120,24 +120,29 @@ function RequestTable({ data }) {
     setPage(0);
   };
 
-  const [id, setId] = React.useState(null)
+  const [id, setId] = React.useState(null);
 
+  const instance = axios.create({
+    withCredentials: true,
+  });
+
+  // use effect to get service-providers and check if logged in service provider
+  // has already applied for specific service request
   useEffect(() => {
     const fetchServiceProvider = () => {
-      axios.get('http://localhost:8080/api/service-providers')
-        .then(response => {
+      instance
+        .get("http://localhost:8080/api/service-providers")
+        .then((response) => {
           const serviceProviderId = response.data.id;
           setId(serviceProviderId);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
         });
     };
 
     fetchServiceProvider();
   }, []);
-
-
 
   // styles for the header row
   const headerStyles = {
