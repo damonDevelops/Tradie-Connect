@@ -83,7 +83,7 @@ To access the user manual on how to use the system, visit our [google doc](https
   <summary>Expand Command Line Instructions</summary>
   
   #### Running the Backend in Command Line
-  * [Download the JAR file](https://www.dropbox.com/s/1gbdcc8va0gd0cq/TradieConnect.jar?dl=0)
+  * [Download the JAR file](https://drive.google.com/file/d/1n7XLAKRtP4NKiUGyUUo4RtmumG9zwBAn/view)
   * Save the file to your PC and open a terminal instance in that folder [instructions](https://www.groovypost.com/howto/open-command-window-terminal-window-specific-folder-windows-mac-linux/)
   * If you wish to run the backend with generated data, enter 'java -jar TradieConnect.jar generateTestData'
   * If you wish to run the backend without generated data, enter 'java -jar TradieConnect.jar'
