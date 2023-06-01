@@ -13,8 +13,12 @@ import useFetchData from "../hooks/fetchData";
 import { Divider } from "@mui/material";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 export default function ServiceProviderReport() {
+   //loading state for if the data is still being fetched
+   const [loading, setLoading] = useState(true);
+
   //fetch url and data
   const fetchURL = "http://localhost:8080/api/service-providers";
   const { data: responseData } = useFetchData(fetchURL);
@@ -27,18 +31,6 @@ export default function ServiceProviderReport() {
 
   //useEffect maps requests to the array.
   //needs to be done this way because the data doesn't contain all data
-  useEffect(() => {
-    const fetchData = async () => {
-      if (responseData && responseData.serviceRequests) {
-        const objectPromise = responseData.serviceRequests.map((id) =>
-          instance.get(`http://localhost:8080/api/service-requests/${id}`)
-        );
-        const serviceProviderRequests = await Promise.all(objectPromise);
-        setRequests(serviceProviderRequests.map((request) => request.data));
-      }
-    };
-    fetchData();
-  }, [responseData]);
 
   //storing day for the file name
   const today = new Date();
@@ -53,6 +45,22 @@ export default function ServiceProviderReport() {
     "http://localhost:8080/api/service-requests/user-requests";
 
   const { data: requestData } = useFetchData(currentRequestURL);
+
+  if(typeof requestData != "undefined"){
+    useEffect(() => {
+      const fetchData = async () => {
+        if (responseData && responseData.serviceRequests) {
+          const objectPromise = responseData.serviceRequests.map((id) =>
+            instance.get(`http://localhost:8080/api/service-requests/${id}`)
+          );
+          const serviceProviderRequests = await Promise.all(objectPromise);
+          setRequests(serviceProviderRequests.map((request) => request.data));
+        }
+      };
+      fetchData().then(() => setLoading(false));
+    }, [responseData]);
+  }
+
 
   //filtering requests by status for current requests
   const currentRequests = serviceRequests
@@ -274,9 +282,18 @@ export default function ServiceProviderReport() {
         </Typography>
         <br />
 
-        <Button variant="contained" onClick={createPDF}>
-          Download PDF
-        </Button>
+        <LoadingButton
+          variant="contained"
+          loading={loading}
+          disabled={!requestData || requestData.length === 0}
+          onClick={createPDF}
+        >
+          {requestData === undefined
+            ? "Could not connect to server, can't generate report"
+            : requestData && requestData.length === 0
+            ? "No data to generate PDF"
+            : "Download PDF"}
+        </LoadingButton>
       </Paper>
     </React.Fragment>
   );
