@@ -117,7 +117,7 @@ function ModeToggle() {
 
 //main dashboard function
 //props contains the page content
-export default function CustomerDash(props) {
+function CustomerDash(props) {
   //drawer and sidebar state
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -386,4 +386,4 @@ export default function CustomerDash(props) {
   );
 }
 
-// export default withAuth(CustomerDash, ["ROLE_CUSTOMER"]);
+export default withAuth(CustomerDash, ["ROLE_CUSTOMER"]);

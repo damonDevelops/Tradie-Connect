@@ -129,7 +129,7 @@ function ModeToggle() {
 }
 
 // function to show service dashboard
-export default function ServiceDash(props) {
+function ServiceDash(props) {
   const [confirmLogout, setConfirmLogout] = React.useState(false);
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -402,7 +402,5 @@ export default function ServiceDash(props) {
   );
 }
 
-// export default withAuth(ServiceDash, ["ROLE_SERVICE_PROVIDER"]); // make sure to remove customer
-// export default function Dashboard() {
-//   return <ServiceDash />;
-// }
+export default withAuth(ServiceDash, ["ROLE_SERVICE_PROVIDER"]); // make sure to remove customer
+
