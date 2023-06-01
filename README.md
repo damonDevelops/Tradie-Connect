@@ -7,6 +7,10 @@ This repository is for the development of a system for the University of Wollong
 3. Service Provider: The Service Providers can apply for available jobs (same skill as job and within 50 kilometres of the customer). If they're accepted, the job moves into their current requests. Once completed, the service provider can mark the job as completed. This will allow the customer to review the job and they will receive this review whenever it is completed. The service provider can also generate report PDF data with statistics and information on available, current and past jobs. They too can edit their user information.
 
 
+## User Manual
+To access the user manual on how to use the system, visit our [google doc](https://docs.google.com/document/d/1O1zQ05ariY4A_-2swsWYzfvTMkbsacA7c2c2Pu9cgT4/edit)
+
+
 ## Team:
 - Damon O'Neil (Lead Frontend Developer)
 - Jesse Surridge (Frontend Developer)
