@@ -23,8 +23,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
-import jwtDecode from "jwt-decode";
-import Cookies from "js-cookie";
 
 import DoneIcon from "@mui/icons-material/Done";
 
@@ -122,8 +120,24 @@ function RequestTable({ data }) {
     setPage(0);
   };
 
-  // to get user id
-  const userInfo = jwtDecode(Cookies.get("JWT"));
+  const [id, setId] = React.useState(null)
+
+  useEffect(() => {
+    const fetchServiceProvider = () => {
+      axios.get('http://localhost:8080/api/service-providers')
+        .then(response => {
+          const serviceProviderId = response.data.id;
+          setId(serviceProviderId);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+    fetchServiceProvider();
+  }, []);
+
+
 
   // styles for the header row
   const headerStyles = {
@@ -181,7 +195,7 @@ function RequestTable({ data }) {
               </TableCell>
               <TableCell sx={cellStyles}>{"$" + row.cost}</TableCell>
               <TableCell sx={cellStyles}>
-                {row.serviceProviderIds.includes(userInfo.userId) ? (
+                {row.serviceProviderIds.includes(id) ? (
                   <DoneIcon style={{ color: "green" }} />
                 ) : null}
               </TableCell>
