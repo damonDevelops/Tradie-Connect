@@ -13,11 +13,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
-
+import { Typography } from "@mui/material";
 
 export default function ServiceProviders() {
   // state variable to store the data from the request
   const [data, setData] = useState([]);
+  const [didDataFetch, setDidDataFetch] = React.useState(true);
 
   // state variable to store the sort model
   const [sortModel, setSortModel] = React.useState([
@@ -37,17 +38,16 @@ export default function ServiceProviders() {
 
   // function to fetch the data from the request
   const fetchData = async () => {
-    try {
-      const response = await instance.get(
-        "http://localhost:8080/api/service-requests",
-        {
-          responseType: "json",
-        }
-      );
-      setData(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+    await instance
+      .get("http://localhost:8080/api/service-requests", {
+        responseType: "json",
+      })
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        setDidDataFetch(false);
+      });
   };
 
   // maps the data from the request into a rows array with only the data required to be shown
@@ -69,7 +69,15 @@ export default function ServiceProviders() {
     })
   );
 
-  return <RequestTable data={rows} />;
+  if (didDataFetch) {
+    return <RequestTable data={rows} />;
+  } else {
+    return (
+      <Typography variant="h6" gutterBottom>
+        Could not fetch Customer Data
+      </Typography>
+    );
+  }
 }
 
 function RequestTable({ data }) {

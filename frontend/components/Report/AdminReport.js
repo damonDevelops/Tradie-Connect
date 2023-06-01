@@ -14,6 +14,7 @@ import { Divider } from "@mui/material";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useMemo } from "react";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 export default function Report() {
   //loading state for if the data is still being fetched
@@ -22,18 +23,20 @@ export default function Report() {
   //gets the date for the file name
   const today = new Date();
   const fileName = "Tradie_Connect_Report_" + today.toLocaleDateString("en-AU");
-  
+
   //URLs for fetching data
   const customerURL = "http://localhost:8080/api/customers/all";
   const serviceProviderURL = "http://localhost:8080/api/service-providers/all";
   const requestURL = "http://localhost:8080/api/service-requests";
 
   const [formattedMembership, setFormattedMembership] = useState("");
+  const [buttonText, setButtonText] = React.useState("Download PDF");
 
-  //assiging data using hook
   const { data: customerData } = useFetchData(customerURL);
   const { data: serviceProviderData } = useFetchData(serviceProviderURL);
   const { data: requestData } = useFetchData(requestURL);
+
+  
 
   const instance = axios.create({
     withCredentials: true,
@@ -42,26 +45,26 @@ export default function Report() {
   //a serviceRequest array for transforming data from backend to frontend
   const [serviceRequestsArray, setServiceRequestsArray] = useState([]);
 
-  //we use a memo to flatten the customer data array
   const serviceRequestArray = useMemo(() => {
     const array = customerData.map((customer) => customer.serviceRequests);
     return array.flat();
   }, [customerData]);
 
   //useEffect to fetch service requests
-  useEffect(() => {
-    const fetchData = async () => {
-      if (serviceRequestArray) {
-        const promises = serviceRequestArray.map((id) =>
-          instance.get("http://localhost:8080/api/service-requests/" + id)
-        );
-        const requests = await Promise.all(promises);
-        setServiceRequestsArray(requests.map((response) => response.data));
-      }
-    };
-    fetchData()
-    .then(() => setLoading(false));
-  }, [serviceRequestArray]);
+  if (typeof customerData != "undefined") {
+    useEffect(() => {
+      const fetchData = async () => {
+        if (serviceRequestArray) {
+          const promises = serviceRequestArray.map((id) =>
+            instance.get("http://localhost:8080/api/service-requests/" + id)
+          );
+          const requests = await Promise.all(promises);
+          setServiceRequestsArray(requests.map((response) => response.data));
+        }
+      };
+      fetchData().then(() => setLoading(false));
+    }, [serviceRequestArray]);
+  }
 
   //for each request in requestData, store the total cost in a variable called totalCost
   const totalCost = requestData.reduce((total, request) => {
@@ -346,9 +349,18 @@ export default function Report() {
         </Typography>
         <br />
 
-        <Button variant="contained" disabled={loading} onClick={createPDF}>
-          Download PDF
-        </Button>
+        <LoadingButton
+          variant="contained"
+          loading={loading}
+          disabled={!customerData || customerData.length === 0}
+          onClick={createPDF}
+        >
+          {customerData === undefined
+            ? "Could not connect to server, can't generate report"
+            : customerData && customerData.length === 0
+            ? "No data to generate PDF"
+            : "Download PDF"}
+        </LoadingButton>
       </Paper>
     </React.Fragment>
   );
@@ -367,5 +379,3 @@ function capitaliseWords(str) {
 function formatDate(date) {
   return date[2] + "/" + date[1] + "/" + date[0];
 }
-
-

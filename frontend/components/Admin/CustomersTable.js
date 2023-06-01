@@ -14,10 +14,12 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
+import { Typography } from "@mui/material";
 
 export default function ServiceProviders() {
   // state variable to store the data from the request
   const [data, setData] = useState([]);
+  const [didDataFetch, setDidDataFetch] = React.useState(true);
 
   // state variable to store the sort model
   const [sortModel, setSortModel] = React.useState([
@@ -38,37 +40,37 @@ export default function ServiceProviders() {
 
   // function to fetch the data from the request
   const fetchData = async () => {
-    try {
-      const response = await instance.get(
-        "http://localhost:8080/api/customers/all",
-        {
-          responseType: "json",
-        }
-      );
-      setData(response.data);
-
-    } catch (error) {
-      console.error(error);
-    }
+    await instance
+      .get("http://localhost:8080/api/customers/all", {
+        responseType: "json",
+      })
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        setDidDataFetch(false);
+      });
   };
 
-
   // maps the data from the request into a rows array with only the data required to be shown
-  const rows = data.map(
-    ({ id, email, firstName, membership, postCode }) => ({
-      id,
-      firstName,
-      email,
-      membership,
-      postCode,
-    })
-  );
+  const rows = data.map(({ id, email, firstName, membership, postCode }) => ({
+    id,
+    firstName,
+    email,
+    membership,
+    postCode,
+  }));
 
-  return (
-      <CustomersTable data={rows} />
-  );
+  if (didDataFetch) {
+    return <CustomersTable data={rows} />;
+  } else {
+    return (
+      <Typography variant="h6" gutterBottom>
+        Could not fetch Customer Data
+      </Typography>
+    );
+  }
 }
-
 function CustomersTable({ data }) {
   // styles for the header row
   const headerStyles = {
@@ -122,9 +124,11 @@ function CustomersTable({ data }) {
               </TableCell>
               <TableCell sx={cellStyles}>{row.email}</TableCell>
               <TableCell sx={cellStyles}>{row.firstName}</TableCell>
-              <TableCell sx={cellStyles}>{row.membership.membershipType
+              <TableCell sx={cellStyles}>
+                {row.membership.membershipType
                   ? capitaliseWords(row.membership.membershipType)
-                  : row.membership.membershipType}</TableCell>
+                  : row.membership.membershipType}
+              </TableCell>
               <TableCell sx={cellStyles}>{row.postCode}</TableCell>
             </TableRow>
           ))}

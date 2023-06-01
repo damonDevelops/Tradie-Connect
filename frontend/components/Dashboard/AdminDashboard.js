@@ -338,8 +338,6 @@ function AdminDash(props) {
 }
 
 export default withAuth(AdminDash, ["ROLE_SYSTEM_ADMIN"]); // make sure to remove customer
-// export default function Dashboard() {
-//   return <AdminDash />;
-// }
+
 
 

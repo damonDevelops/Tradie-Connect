@@ -13,18 +13,19 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
-
+import { Typography } from "@mui/material";
 
 export default function ServiceProviders() {
   // state variable to store the data from the request
   const [data, setData] = useState([]);
+  const [didDataFetch, setDidDataFetch] = React.useState(true);
+
   const [sortModel, setSortModel] = React.useState([
     {
       field: "id",
       sort: "desc",
     },
   ]);
-
 
   useEffect(() => {
     fetchData();
@@ -36,20 +37,17 @@ export default function ServiceProviders() {
 
   // function to fetch the data from the request
   const fetchData = async () => {
-    try {
-      const response = await instance.get(
-        "http://localhost:8080/api/service-providers/all",
-        {
-          responseType: "json",
-        }
-      );
-      setData(response.data);
-
-    } catch (error) {
-      console.error(error);
-    }
+    await instance
+      .get("http://localhost:8080/api/service-providers/all", {
+        responseType: "json",
+      })
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        setDidDataFetch(false);
+      });
   };
-
 
   // maps the data from the request into a rows array with only the data required to be shown
   const rows = data.map(
@@ -63,9 +61,15 @@ export default function ServiceProviders() {
     })
   );
 
-  return (
-    <ServiceProvidersTable data={rows} />
-  );
+  if (didDataFetch) {
+    return <ServiceProvidersTable data={rows} />;
+  } else {
+    return (
+      <Typography variant="h6" gutterBottom>
+        Could not fetch Customer Data
+      </Typography>
+    );
+  }
 }
 
 function ServiceProvidersTable({ data }) {
@@ -106,7 +110,7 @@ function ServiceProvidersTable({ data }) {
       <Table sx={{ minwidth: 650 }}>
         <TableHead>
           <TableRow>
-          <TableCell sx={headerStyles}>Customer (ID)</TableCell>
+            <TableCell sx={headerStyles}>Customer (ID)</TableCell>
             <TableCell sx={headerStyles}>Email</TableCell>
             <TableCell sx={headerStyles}>Business Name</TableCell>
             <TableCell sx={headerStyles}>Business Type</TableCell>
@@ -122,10 +126,14 @@ function ServiceProvidersTable({ data }) {
               </TableCell>
               <TableCell sx={cellStyles}>{row.email}</TableCell>
               <TableCell sx={cellStyles}>{row.companyName}</TableCell>
-              <TableCell sx={cellStyles}>{capitaliseWords(row.skills)}</TableCell>
-              <TableCell sx={cellStyles}>{row.membership.membershipType
+              <TableCell sx={cellStyles}>
+                {capitaliseWords(row.skills)}
+              </TableCell>
+              <TableCell sx={cellStyles}>
+                {row.membership.membershipType
                   ? capitaliseWords(row.membership.membershipType)
-                  : row.membership.membershipType}</TableCell>
+                  : row.membership.membershipType}
+              </TableCell>
               <TableCell sx={cellStyles}>{row.postCode}</TableCell>
             </TableRow>
           ))}
