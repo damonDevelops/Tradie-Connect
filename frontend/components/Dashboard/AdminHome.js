@@ -8,16 +8,25 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CustomersTable from "../Admin/CustomersTable";
 import ServiceProvidersTable from "../Admin/ServiceProvidersTable";
 import RequestsTable from "../Admin/RequestsTable";
-import { Divider } from "@mui/material";
+import { Divider, Snackbar } from "@mui/material";
 import Button from "@mui/material/Button";
 import Link from "next/link";
 import LoadingButton from "@mui/lab/LoadingButton";
 import axios from "axios";
 import { useEffect } from "react";
+import {Stack} from "@mui/material";
+import {Alert} from "@mui/material";
+
 
 const theme = createTheme();
 
 export default function Home() {
+  const [mainAlertOpen, setMainAlertOpen] = React.useState(false);
+  const [alertMessage, setAlertMessage] = React.useState("");
+
+  const handleClose = () => {
+    setMainAlertOpen(false);
+  };
 
   //useEffect to allow the admin to generate test data for the website
   useEffect(() => {
@@ -26,8 +35,8 @@ export default function Home() {
     });
 
     const dataURL = "http://localhost:8080/api/customers/all";
-    instance.get(dataURL).then((response) => {
-      console.log(response.data.length)
+    instance.get(dataURL)
+    .then((response) => {
       if (response.data.length >= 100) {
         setDisabled(true);
         setButtonLabel("Data Already Generated");
@@ -35,7 +44,11 @@ export default function Home() {
         setDisabled(false);
         setButtonLabel("Generate Data");
       }
-    });
+    }).catch((error =>{
+      setDisabled(true);
+      setAlertMessage(error.message);
+      setMainAlertOpen(true);
+    }));
   }, []);
 
   //state variables for data button
@@ -52,7 +65,11 @@ export default function Home() {
     
     const dataURL = "http://localhost:8080/admin/generateTestData";
     try {
-      await instance.post(dataURL);
+      await instance.post(dataURL)
+      .catch((error) => {
+        setAlertMessage(error);
+        setMainAlertOpen(true);
+      });
       setLoading(false);
       setButtonLabel("Data Generated Successfully");
       setDisabled(true);
@@ -83,7 +100,6 @@ export default function Home() {
           sx={{ width: "20%", marginLeft: "auto", marginBottom: 1 }}
           onClick={generateData}
           loading={loading}
-          loadingPosition="end"
           variant="contained"
           disabled={disabled}
         >
@@ -148,6 +164,21 @@ export default function Home() {
           </Button>
         </Link>
         <br />
+        <Stack spacing={2} sx={{ width: "100%" }}>
+          <Snackbar
+            open={mainAlertOpen}
+            autoHideDuration={6000}
+            onClose={handleClose}
+          >
+            <Alert
+              onClose={handleClose}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              {alertMessage}
+            </Alert>
+          </Snackbar>
+        </Stack>
       </Paper>
     </ThemeProvider>
   );

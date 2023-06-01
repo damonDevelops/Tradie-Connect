@@ -16,7 +16,7 @@ import { Stack } from "@mui/material";
 import { Snackbar } from "@mui/material";
 import { Alert } from "@mui/material";
 import postCodeToState from "../functional_components/postcodeToState";
-
+import { Grid } from "@mui/material";
 
 export default function Account() {
   //state variables for account details
@@ -28,11 +28,11 @@ export default function Account() {
   const [postcode, setPostcode] = useState("");
   const [state, setState] = useState("");
 
+  const [mainAlertOpen, setMainAlertOpen] = React.useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
   //state variables for confirmation dialog
   const [confirmationOpen, setConfirmationOpen] = React.useState(false);
-
-  //open variables for alerts
-  const [postCodeAlertOpen, setPostCodeAlertOpen] = useState(false);
 
   //regex for postcode
   const postcodeRegex = new RegExp("^(0[289][0-9]{2})|([1-9][0-9]{3})");
@@ -48,10 +48,9 @@ export default function Account() {
   };
 
   //function to handle alerts
-  const handleAlert = (warning_type) => {
-    if (warning_type == "postcode") {
-      setPostCodeAlertOpen(true);
-    }
+  const handleAlert = (message) => {
+    setMainAlertOpen(true);
+    setAlertMessage(message);
   };
 
   //function to handle closing alerts
@@ -59,13 +58,8 @@ export default function Account() {
     if (reason === "clickaway") {
       return;
     }
-    setPostCodeAlertOpen(false);
+    setMainAlertOpen(false);
     setConfirmationOpen(false);
-  };
-
-  //function to handle opening confirmation dialog
-  const handleConfirmOpen = () => {
-    setConfirmationOpen(true);
   };
 
   //function to fetch the customer data to display
@@ -73,59 +67,61 @@ export default function Account() {
     fetchData();
   }, []);
 
-
   const instance = axios.create({
     withCredentials: true,
   });
 
   //fetchData function to get the customer data
-  const fetchData = async () => {
-    try {
-      const response = await instance.get(
-        "http://localhost:8080/api/customers"
-      );
-
-      setFirstName(response.data.firstName);
-      setLastName(response.data.lastName);
-      setPhone(response.data.phoneNumber);
-      setAddress(response.data.streetAddress);
-      setCity(response.data.suburb.name);
-      setPostcode(response.data.postCode);
-      setState(response.data.suburb.state);
-
-    } catch (error) {
-      console.error(error);
-    }
+  const fetchData = () => {
+    instance
+      .get("http://localhost:8080/api/customers")
+      .then((response) => {
+        setFirstName(response.data.firstName);
+        setLastName(response.data.lastName);
+        setPhone(response.data.phoneNumber);
+        setAddress(response.data.streetAddress);
+        setCity(response.data.suburb.name);
+        setPostcode(response.data.postCode);
+        setState(response.data.suburb.state);
+      })
+      .catch((error) => {
+        handleAlert("An error occured: " + error);
+        console.error(error);
+      });
   };
 
   //function to handle submit
   const handleSubmit = (event) => {
     event.preventDefault();
+    setConfirmationOpen(true);
+  };
+
+  const putData = (event) => {
+    event.preventDefault();
 
     if (!postcodeRegex.test(postcode)) {
-      handleAlert("postcode");
+      handleAlert("Invalid Postcode");
     } else {
-      try {
-        instance
-          .put(`http://localhost:8080/api/customers`, {
-            firstName: firstName,
-            lastName: lastName,
-            phoneNumber: phone,
-            streetAddress: address,
-            suburb: {
-              name: city,
-              state: state,
-            },
-            postCode: postcode,
-          })
-          .then((res) => {
-            window.location.reload(true);
-          });
-      } catch (error) {
-        console.error(error);
-      }
+      instance
+        .put(`http://localhost:8080/api/customers`, {
+          firstName: firstName,
+          lastName: lastName,
+          phoneNumber: phone,
+          streetAddress: address,
+          suburb: {
+            name: city,
+            state: state,
+          },
+          postCode: postcode,
+        })
+        .then((res) => {
+          window.location.reload(true);
+        })
+        .catch((error) => {
+          handleAlert("An error occurred: " + error);
+        });
     }
-  };
+  }
 
   return (
     <React.Fragment>
@@ -137,132 +133,137 @@ export default function Account() {
           height: 750,
         }}
       >
-        <Typography sx={{overflow: "auto"}}  variant="h4" gutterBottom>
+        <Typography sx={{ overflow: "auto" }} variant="h4" gutterBottom>
           Update Account Information
         </Typography>
 
-        <TextField
-          autoComplete="given-name"
-          name="firstName"
-          onChange={(event) => setFirstName(event.target.value)}
-          value={firstName}
-          required
-          fullWidth
-          id="firstName"
-          label="First Name"
-          autoFocus
-        />
-        <br />
-        <TextField
-          autoComplete="given-name"
-          name="lastName"
-          onChange={(event) => setLastName(event.target.value)}
-          value={lastName}
-          required
-          fullWidth
-          id="lastName"
-          label="Last Name"
-          autoFocus
-        />
-        <br />
-        <TextField
-          autoComplete="phone"
-          name="phone"
-          onChange={(event) => setPhone(event.target.value)}
-          value={phone}
-          required
-          fullWidth
-          id="phone"
-          label="Phone"
-          autoFocus
-        />
-        <br />
-        <TextField
-          autoComplete="address"
-          name="address"
-          onChange={(event) => setAddress(event.target.value)}
-          value={address}
-          required
-          fullWidth
-          id="address"
-          label="Address"
-          autoFocus
-        />
-        <br />
-        <TextField
-          autoComplete="city"
-          name="city"
-          onChange={(event) => setCity(event.target.value)}
-          value={city}
-          required
-          fullWidth
-          id="city"
-          label="City"
-          autoFocus
-        />
-        <br />
-        <TextField
-          autoComplete="postcode"
-          name="postcode"
-          onChange={(event) => handlePostcodeChange(event)}
-          value={postcode || ''}
-          required
-          fullWidth
-          id="postcode"
-          label="Postcode"
-          autoFocus
-        />
-        <br />
-        <TextField
-          autoComplete="state"
-          name="state"
-          onChange={(event) => setState(event.target.value)}
-          value={state || ''}
-          required
-          fullWidth
-          id="state"
-          label="State"
-          autoFocus
-        />
-        <br />
-        {/* <Autocomplete
-  id="combo-box-demo"
-  options={testData}
-  style={{
-    width: 300,
-  }}
-  renderInput={(params) => (
-    <TextField {...params} label="Combo box" variant="outlined" />
-  )}
-/> */}
-        <Button
-          //type="submit"
-          onClick={handleConfirmOpen}
-          variant="contained"
-          color="warning"
-        >
-          Update Account Details
-        </Button>
-        <br />
-        <Button
-          //type="submit"
-          href="/Customer/Dashboard"
-          variant="contained"
-        >
-          Back to Dashboard
-        </Button>
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                autoComplete="given-name"
+                name="firstName"
+                onChange={(event) => setFirstName(event.target.value)}
+                value={firstName}
+                required
+                fullWidth
+                id="firstName"
+                label="First Name"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                autoComplete="given-name"
+                name="lastName"
+                onChange={(event) => setLastName(event.target.value)}
+                value={lastName}
+                required
+                fullWidth
+                id="lastName"
+                label="Last Name"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                autoComplete="phone"
+                name="phone"
+                onChange={(event) => setPhone(event.target.value)}
+                value={phone}
+                required
+                fullWidth
+                id="phone"
+                label="Phone"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                autoComplete="address"
+                name="address"
+                onChange={(event) => setAddress(event.target.value)}
+                value={address}
+                required
+                fullWidth
+                id="address"
+                label="Address"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                autoComplete="city"
+                name="city"
+                onChange={(event) => setCity(event.target.value)}
+                value={city}
+                required
+                fullWidth
+                id="city"
+                label="City"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                autoComplete="postcode"
+                name="postcode"
+                onChange={(event) => handlePostcodeChange(event)}
+                value={postcode || ""}
+                required
+                fullWidth
+                id="postcode"
+                label="Postcode"
+                autoFocus
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                autoComplete="state"
+                name="state"
+                onChange={(event) => setState(event.target.value)}
+                value={state || ""}
+                required
+                fullWidth
+                id="state"
+                label="State"
+                autoFocus
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="warning"
+              >
+                Update Account Details
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                fullWidth
+                href="/Customer/Dashboard"
+                variant="contained"
+              >
+                Back to Dashboard
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
         <Stack spacing={2} sx={{ width: "100%" }}>
           <Snackbar
-            open={postCodeAlertOpen}
+            open={mainAlertOpen}
             autoHideDuration={6000}
             onClose={handleClose}
           >
             <Alert
               onClose={handleClose}
-              severity="warning"
+              severity="error"
               sx={{ width: "100%" }}
             >
-              Invalid Postcode, please try again
+              {alertMessage}
             </Alert>
           </Snackbar>
         </Stack>
@@ -304,12 +305,12 @@ export default function Account() {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Edit Details</Button>
-            <Button onClick={handleSubmit} autoFocus>
+            <Button onClick={putData} autoFocus>
               Confirm
             </Button>
           </DialogActions>
         </Dialog>
       </Paper>
-      </React.Fragment>
+    </React.Fragment>
   );
 }

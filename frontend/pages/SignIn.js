@@ -14,7 +14,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
-import { useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -28,17 +27,7 @@ import { checkRole } from "../components/hooks/checkUser";
 //theme for the page
 const theme = createTheme();
 
-
 export default function SignIn() {
-  //useEffect checks the role of the user and redirects them to the correct page
-  useEffect(() => {
-    if (checkRole() == "ROLE_CUSTOMER") {
-      router.push("/Customer");
-    } else if (checkRole() == "ROLE_SERVICE_PROVIDER") {
-      router.push("/Service-Provider");
-    } else return;
-  }, []);
-
   //time for loading backdrop
   const timer = React.useRef();
 
@@ -49,7 +38,7 @@ export default function SignIn() {
   //state variables for alerts
   const [backdropOpen, setBackdropOpen] = React.useState(false);
   const [loginFailAlert, setLoginFailAlert] = useState(false);
-
+  const [alertMessage, setAlertMessage] = useState("");
 
   //variable for fetching current user to store in current user context
   //const { fetchCurrentUser } = useCurrentUser(); // part of current user context, maybe delete
@@ -71,48 +60,49 @@ export default function SignIn() {
   }, []);
 
   //function to handle the authentication
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    //tries to log the user in
-    try {
-      //open the loading wheel
-      setBackdropOpen(true);
+    // Open the loading wheel
+    setBackdropOpen(true);
 
-      //make the axios request
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/SignIn",
-        {
-          email: authenticateEmail,
-          password: authenticatePassword,
+    // Make the axios request
+    axios
+      .post("http://localhost:8080/api/auth/SignIn", {
+        email: authenticateEmail,
+        password: authenticatePassword,
+      })
+      .then((response) => {
+        // Set the JWT cookie and redirect to the dashboard
+        Cookies.set("JWT", response.data.token);
+
+        // If the response is successful, open the wheel for a bit
+        if (response.status === 200) {
+          setBackdropOpen(true);
+          timer.current = window.setTimeout(() => {
+            setBackdropOpen(false);
+          }, 10000);
         }
-      );
 
-      //set the JWT cookie and redirect to the dashboard
-      Cookies.set("JWT", response.data.token);
-
-      //if the response is successful, open the wheel for a bit
-      if (response.status === 200) {
-        setBackdropOpen(true);
-        //fetchCurrentUser(); // part of current user context, maybe delete
-        timer.current = window.setTimeout(() => {
-          setBackdropOpen(false);
-        }, 10000);
-      }
-
-      if (checkRole() == "ROLE_SYSTEM_ADMIN") {
-        router.push("/Admin");
-      } else if (checkRole() == "ROLE_CUSTOMER") {
-        router.push("/Customer");
-      } else router.push("/Service-Provider");
-
-      //window.location.href = "../Customer/Index";
-    } catch (error) {
-      //close loading
-      setBackdropOpen(false);
-      //if the response is unsuccessful, open the alert
-      setLoginFailAlert(true);
-    }
+        if (checkRole() === "ROLE_SYSTEM_ADMIN") {
+          router.push("/Admin");
+        } else if (checkRole() === "ROLE_CUSTOMER") {
+          router.push("/Customer");
+        } else {
+          router.push("/Service-Provider");
+        }
+      })
+      .catch((error) => {
+        if (error.response?.status === 403) {
+          setAlertMessage("Invalid Login Details");
+        } else {
+          setAlertMessage("Error: " + error);
+        }
+        // Close loading
+        setBackdropOpen(false);
+        // If the response is unsuccessful, open the alert
+        setLoginFailAlert(true);
+      });
   };
 
   return (
@@ -200,7 +190,7 @@ export default function SignIn() {
               severity="error"
               sx={{ width: "100%" }}
             >
-              Incorrect email or password, please try again
+              {alertMessage}
             </Alert>
           </Snackbar>
         </Stack>

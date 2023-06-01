@@ -62,9 +62,9 @@ export default function NewRequest() {
   const [WorkType, setWorkType] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [membershipType, setMembershipType] = React.useState("");
-  
+
   //variable for the date error message
-  const [dateAlertOpen, setDateAlertOpen] = React.useState(false);
+  const [mainAlertOpen, setMainAlertOpen] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState("");
 
   //variables for the start date
@@ -171,35 +171,33 @@ export default function NewRequest() {
   };
 
   //fetches the data from the database
-  const fetchData = async () => {
-    try {
-      const response = await instance.get(
-        "http://localhost:8080/api/customers"
-      );
-
-      setMembershipType(response.data.membership.membershipType);
-
-    } catch (error) {
-      console.error(error);
-    }
+  const fetchData = () => {
+    instance
+      .get("http://localhost:8080/api/customers")
+      .then((response) => {
+        setMembershipType(response.data.membership.membershipType);
+      })
+      .catch((error) => {
+        handleDateAlert("An error occurred: " + error);
+      });
   };
-  
+
   //handles the closing of the final alert
   const handleClose = () => {
-    setDateAlertOpen(false);
+    setMainAlertOpen(false);
   };
 
   //handles the closing of the date alert
   const handleDateAlert = (message) => {
-    setDateAlertOpen(true);
+    setMainAlertOpen(true);
     setAlertMessage(message);
   };
 
   //function to submit the new request
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    //validation for start and end date
+  
+    // Validation for start and end date
     if (!date_regex.test(startDate) || !date_regex.test(endDate)) {
       handleDateAlert("Invalid Date Format, please use DD/MM/YYYY");
     } else if (
@@ -208,26 +206,28 @@ export default function NewRequest() {
     ) {
       handleDateAlert("Start date must be before end date");
     } else {
-      try {
-        //makes the post request to the backend
-        instance
-          .post(`http://localhost:8080/api/service-requests/create`, {
-            cost: membershipType == "CLIENT_SUBSCRIPTION" ? 0 : diffDays * multiplier + 200,
-            description: description,
-            serviceType: WorkType.toUpperCase(),
-            dateTimeRange: {
-              startDate: submitStartDateFormat,
-              startTime: "9:00am",
-              endDate: submitEndDateFormat,
-              endTime: "5:00pm",
-            },
-          })
-          .then((res) => {
-            setFinalOpen(true);
-          });
-      } catch (error) {
-        console.error(error);
-      }
+      // Make the post request to the backend
+      instance
+        .post(`http://localhost:8080/api/service-requests/create`, {
+          cost:
+            membershipType == "CLIENT_SUBSCRIPTION"
+              ? 0
+              : diffDays * multiplier + 200,
+          description: description,
+          serviceType: WorkType.toUpperCase(),
+          dateTimeRange: {
+            startDate: submitStartDateFormat,
+            startTime: "9:00am",
+            endDate: submitEndDateFormat,
+            endTime: "5:00pm",
+          },
+        })
+        .then((res) => {
+          setFinalOpen(true);
+        })
+        .catch((error) => {
+          handleDateAlert("Error submitting request: " + error);
+        });
     }
   };
 
@@ -243,7 +243,7 @@ export default function NewRequest() {
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <form onSubmit={handleSubmit}>
-          <Typography sx={{overflow: "auto"}}  variant="h4" gutterBottom>
+            <Typography sx={{ overflow: "auto" }} variant="h4" gutterBottom>
               New Request
             </Typography>
 
@@ -283,26 +283,7 @@ export default function NewRequest() {
               rows={4}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              defaultValue="Insert any relevant information about the job here"
             />
-            {/* <TextField
-              sx={{ width: "30%" }}
-              margin="normal"
-              required
-              id="outlined-required"
-              label="Start Date"
-              name="date"
-              onChange={(event) => setStartDate(event.target.value)}
-              value={startDate}
-              InputLabelProps={{ shrink: true }}
-            /> */}
-            {/* <DatePicker
-              label="Uncontrolled picker"
-              defaultValue={dayjs("2022-04-17")}
-              sx={{ width: "30%" }}
-              onChange={(event) => setStartDate(formatDate(event))}
-              margin="normal"
-            /> */}
             <DatePicker
               label="Start Date"
               value={datePickerStart}
@@ -321,10 +302,8 @@ export default function NewRequest() {
               minDate={minDate}
             />
             <br />
-            {/* TODO: change the customer_type to a variable based on their subscription type to show cost */}
             {membershipType == "PAY_ON_DEMAND" && (
               <Typography sx={{ mt: 2 }} variant="h6" gutterBottom>
-                
                 Total Cost: ${diffDays * multiplier + 200}
               </Typography>
             )}
@@ -343,7 +322,7 @@ export default function NewRequest() {
             <Button
               color="primary"
               fullWidth
-              onclick={redirect}
+              onClick={redirect}
               variant="contained"
             >
               Back to Dashboard
@@ -352,7 +331,7 @@ export default function NewRequest() {
         </LocalizationProvider>
         <Stack spacing={2} sx={{ width: "100%" }}>
           <Snackbar
-            open={dateAlertOpen}
+            open={mainAlertOpen}
             autoHideDuration={6000}
             onClose={handleClose}
           >
