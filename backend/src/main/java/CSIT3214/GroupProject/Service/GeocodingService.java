@@ -33,7 +33,7 @@ public class GeocodingService {
         logger.info("Fetching lat/lng for suburb: {}, state: {}", suburbName, state);
         String baseUrl = "https://maps.googleapis.com/maps/api/geocode/json";
         String address = String.format("%s, %s, Australia", suburbName, state);
-        String apiKey = "YOUR_API_KEY"; // Replace with your own API key
+        String apiKey = "AIzaSyAV4VcwlPdfyWJA1MYMUcCwgqakZYn9wMk"; // Replace with your own API key
 
         // Build the URL with query parameters
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl)
