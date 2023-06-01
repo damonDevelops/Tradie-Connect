@@ -197,8 +197,8 @@ export default function NewRequest() {
   //function to submit the new request
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    //validation for start and end date
+  
+    // Validation for start and end date
     if (!date_regex.test(startDate) || !date_regex.test(endDate)) {
       handleDateAlert("Invalid Date Format, please use DD/MM/YYYY");
     } else if (
@@ -207,33 +207,32 @@ export default function NewRequest() {
     ) {
       handleDateAlert("Start date must be before end date");
     } else {
-      try {
-        //makes the post request to the backend
-        instance
-          .post(`http://localhost:8080/api/service-requests/create`, {
-            cost:
-              membershipType == "CLIENT_SUBSCRIPTION"
-                ? 0
-                : diffDays * multiplier + 200,
-            description: description,
-            serviceType: WorkType.toUpperCase(),
-            dateTimeRange: {
-              startDate: submitStartDateFormat,
-              startTime: "9:00am",
-              endDate: submitEndDateFormat,
-              endTime: "5:00pm",
-            },
-          })
-          .then((res) => {
-            setFinalOpen(true);
-          })
-          .catch((error) => {
-            if (error.response.status === 403)
-              handleDateAlert("Error submitting request, please try again");
-          });
-      } catch (error) {
-        handleDateAlert("Error submitting request, please try again");
-      }
+      // Make the post request to the backend
+      instance
+        .post(`http://localhost:8080/api/service-requests/create`, {
+          cost:
+            membershipType == "CLIENT_SUBSCRIPTION"
+              ? 0
+              : diffDays * multiplier + 200,
+          description: description,
+          serviceType: WorkType.toUpperCase(),
+          dateTimeRange: {
+            startDate: submitStartDateFormat,
+            startTime: "9:00am",
+            endDate: submitEndDateFormat,
+            endTime: "5:00pm",
+          },
+        })
+        .then((res) => {
+          setFinalOpen(true);
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 403) {
+            handleDateAlert("Error submitting request, please try again");
+          } else {
+            handleDateAlert("Error submitting request, please try again");
+          }
+        });
     }
   };
 
@@ -289,7 +288,6 @@ export default function NewRequest() {
               rows={4}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              defaultValue="Insert any relevant information about the job here"
             />
             <DatePicker
               label="Start Date"
@@ -329,7 +327,7 @@ export default function NewRequest() {
             <Button
               color="primary"
               fullWidth
-              onclick={redirect}
+              onClick={redirect}
               variant="contained"
             >
               Back to Dashboard
