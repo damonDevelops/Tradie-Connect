@@ -43,6 +43,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+
 import {
   Experimental_CssVarsProvider as CssVarsProvider,
   experimental_extendTheme as extendTheme,
@@ -128,7 +129,7 @@ function ModeToggle() {
 }
 
 // function to show service dashboard
-function ServiceDash(props) {
+export default function ServiceDash(props) {
   const [confirmLogout, setConfirmLogout] = React.useState(false);
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -401,7 +402,7 @@ function ServiceDash(props) {
   );
 }
 
-export default withAuth(ServiceDash, ["ROLE_SERVICE_PROVIDER"]); // make sure to remove customer
+// export default withAuth(ServiceDash, ["ROLE_SERVICE_PROVIDER"]); // make sure to remove customer
 // export default function Dashboard() {
 //   return <ServiceDash />;
 // }
